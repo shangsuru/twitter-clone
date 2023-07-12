@@ -67,3 +67,13 @@ The search page has a search bar on top. Next to the search bar is a send button
 
 The Header contains the twitter logo in the middle.
 The Footer is a navigation menu with icons for the news feed page, the search page and the user's profile.
+
+## API
+
+- Posting a tweet: <span style="color:orange">POST /tweets</span>
+- Retrieving the global feed: <span style="color:orange">GET /tweets</span>
+- Retrieving the personal feed: <span style="color:orange">GET /tweets/:userId</span>
+- Read profile information: <span style="color:orange">GET /users/:userId/profile</span>
+- Update profile information: <span style="color:orange">PATCH /users/:userId/profile</span>
+- Follow a user: <span style="color:orange">PATCH /users/:userId/follow</span>
+- Unfollow a user: <span style="color:orange">PATCH /users/:userId/unfollow</span>

@@ -14,3 +14,17 @@ This is a Twitter clone implemented in Typescript!
 ## Non-functional requirements
 
 - High scalability with minimum latency
+
+## Implementation
+
+- Language: Typescript
+- React and Next.js in the frontend
+- Express API in the backend
+- SSO using OIDC
+- Store image files in S3 using Pre-Signed URL
+- Use ElasticSearch service for full text search
+
+To simplify deployment, we serve the frontend from our backend.
+During development, we use a proxy to run the frontend and backend on the same port.
+
+![Architecture](architecture.jpg)

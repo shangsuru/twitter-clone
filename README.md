@@ -77,3 +77,20 @@ The Footer is a navigation menu with icons for the news feed page, the search pa
 - Update profile information: <span style="color:orange">PATCH /users/:userId/profile</span>
 - Follow a user: <span style="color:orange">PATCH /users/:userId/follow</span>
 - Unfollow a user: <span style="color:orange">PATCH /users/:userId/unfollow</span>
+
+## Database Design
+
+![Schema](database-schema.jpg)
+
+The application is read-heavy. We use a cache to speed up reads.
+
+Operations:
+
+- Post Tweet: A user can publish a new message to their followers (4.6k requests/sec on average, over 12k requests/sec at peak)
+- View personal news feed: A user can view tweets posted by the people they follow (300k req/sec)
+
+Use a personal feed cache: When a user posts a tweet, look up all the people who follow the user and insert the new tweet not only in the Tweets Table, but also into each of their personal feed caches. The request for the personal feed is then cheap, because it got precomputed.
+
+For a small number of users with a lot of followers. it is too expensive to populate the caches of millions of users. Therefore, their tweets need to be fetched separately, so posting the tweet simply inserts it in the global database of tweets. In order for a user to know which of his followed accounts he needs to fetch separately, he can query the Follow Table for entries with the celebrity attribute set to true.
+
+![Caches](caches.png)

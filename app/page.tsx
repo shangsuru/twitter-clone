@@ -1,5 +1,94 @@
-import Image from "next/image";
+"use client";
+
+import React from "react";
+import { Tabs } from "antd";
+import type { TabsProps } from "antd";
+
+import TweetCard from "@/components/TweetCard";
+
+type TweetData = {
+  sender: string;
+  handle: string;
+  text: string;
+};
+
+const all: TweetData[] = [
+  {
+    sender: "Gynvael Coldwind",
+    handle: "@gynvael",
+    text: "Friday was my last day at Google. I'm saddened to leave behind my team of last 12+ years, but I know Google Security is in great hands.  It's time for a short break and then I'm moving on with plans I've made long ago - my own sec research, consulting, and education company.",
+  },
+  {
+    sender: "John Hammond",
+    handle: "@_JohnHammond",
+    text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
+  },
+  {
+    sender: "Yaron (Ron) Minsky",
+    handle: "@yminsky",
+    text: "So...does anyone have advice for picking between the various and sundry Python type systems? mypy, pyright, pyre, pytype...how do you pick?",
+  },
+  {
+    sender: "DevSecCon",
+    handle: "@devseccon",
+    text: "Missed the interactive workshop on OWASP TOP 10 Security API 2023 x GraphQL at DSC24? Watch now...",
+  },
+  {
+    sender: "Clint Gibler",
+    handle: "@clintgibler",
+    text: "findmytakeover scans aws, azure, and google cloud for dangling DNS records and potential subdomain takeovers #cloudsec",
+  },
+];
+
+const following: TweetData[] = [
+  {
+    sender: "Yaron (Ron) Minsky",
+    handle: "@yminsky",
+    text: "So...does anyone have advice for picking between the various and sundry Python type systems? mypy, pyright, pyre, pytype...how do you pick?",
+  },
+  {
+    sender: "DevSecCon",
+    handle: "@devseccon",
+    text: "Missed the interactive workshop on OWASP TOP 10 Security API 2023 x GraphQL at DSC24? Watch now...",
+  },
+  {
+    sender: "Clint Gibler",
+    handle: "@clintgibler",
+    text: "findmytakeover scans aws, azure, and google cloud for dangling DNS records and potential subdomain takeovers #cloudsec",
+  },
+];
+
+const onChange = (key: string) => {
+  console.log(key);
+};
+
+const items: TabsProps["items"] = [
+  {
+    key: "1",
+    label: "All",
+    children: all.map((tweet) => (
+      <TweetCard
+        key={tweet.handle}
+        sender={tweet.sender}
+        handle={tweet.handle}
+        text={tweet.text}
+      />
+    )),
+  },
+  {
+    key: "2",
+    label: "Following",
+    children: following.map((tweet) => (
+      <TweetCard
+        key={tweet.handle}
+        sender={tweet.sender}
+        handle={tweet.handle}
+        text={tweet.text}
+      />
+    )),
+  },
+];
 
 export default function Home() {
-  return "This is Home!";
+  return <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
 }

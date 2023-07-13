@@ -1,75 +1,79 @@
 "use client";
 
-import { useState } from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import React from "react";
+import { Tabs } from "antd";
+import type { TabsProps } from "antd";
 
 import UserCard from "@/components/UserCard";
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+type UserData = {
+  username: string;
+  handle: string;
+  bio: string;
+};
 
-function CustomTabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+const followers: UserData[] = [
+  {
+    username: "Gynvael Coldwind",
+    handle: "@gynvael",
+    bio: "security researcher/programmer. DragonSector CTF. youtube.com/@GynvaelEN",
+  },
+  {
+    username: "John Hammond",
+    handle: "@_JohnHammond",
+    bio: "Hacker. Friend. Cybersecurity Researcher",
+  },
+];
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
+const following: UserData[] = [
+  {
+    username: "Yaron (Ron) Minsky",
+    handle: "@yminsky",
+    bio: "Occasional OCaml programmer. Host of @signalsthreads",
+  },
+  {
+    username: "DevSecCon",
+    handle: "@devseccon",
+    bio: "Community for developers, operators & security people to share their views & practices on DevSecOps",
+  },
+  {
+    username: "Clint Gibler",
+    handle: "@clintgibler",
+    bio: "Head of Security Research @semgrep. Creator of tldrsec.com newsletter",
+  },
+];
 
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
+const onChange = (key: string) => {
+  console.log(key);
+};
 
-function BasicTabs() {
-  const [value, setValue] = useState(0);
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
-  return (
-    <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          <Tab label="Followers" {...a11yProps(0)} />
-          <Tab label="Following" {...a11yProps(1)} />
-        </Tabs>
-      </Box>
-      <CustomTabPanel value={value} index={0}>
-        <UserCard />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <UserCard />
-      </CustomTabPanel>
-    </Box>
-  );
-}
+const items: TabsProps["items"] = [
+  {
+    key: "1",
+    label: "Followers",
+    children: followers.map((user) => (
+      <UserCard
+        key={user.handle}
+        username={user.username}
+        handle={user.handle}
+        bio={user.bio}
+      />
+    )),
+  },
+  {
+    key: "2",
+    label: "Following",
+    children: following.map((user) => (
+      <UserCard
+        key={user.handle}
+        username={user.username}
+        handle={user.handle}
+        bio={user.bio}
+      />
+    )),
+  },
+];
 
 export default function Follow() {
-  return <BasicTabs />;
+  return <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
 }

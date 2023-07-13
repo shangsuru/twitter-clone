@@ -18,14 +18,11 @@ This is a Twitter clone implemented in Typescript!
 ## Implementation
 
 - Language: Typescript
-- React and Next.js in the frontend
-- Express API in the backend
-- SSO using OIDC
-- Store image files in S3 using Pre-Signed URL
-- Use ElasticSearch service for full text search
-
-To simplify deployment, we serve the frontend from our backend.
-During development, we use a proxy to run the frontend and backend on the same port.
+- Frontend: React, Next.js, Material UI
+- Backend: Express
+- Auth: SSO using OIDC
+- Storage: DynamoDB as the main data store, Elasticache for speeding up reads, S3 to store images
+- Search: MeiliSearch or TypeSense
 
 ![Architecture](architecture.jpg)
 

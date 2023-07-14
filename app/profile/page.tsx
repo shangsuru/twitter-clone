@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { Avatar, Divider, Typography, Image } from "antd";
+import { Avatar, Button, Divider, Typography, Image, Modal, Input } from "antd";
 import {
   EnvironmentOutlined,
   LinkOutlined,
@@ -33,6 +33,29 @@ type TweetData = {
 };
 
 export default function Profile() {
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  function showModal() {
+    setOpen(true);
+  }
+
+  function handleModalOk() {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setOpen(false);
+    }, 3000);
+  }
+
+  function handleModalCancel() {
+    setOpen(false);
+  }
+
+  function onTextAreaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    console.log("Change:", e.target.value);
+  }
+
   const user: UserData = {
     username: "John Hammond",
     handle: "@_JohnHammond",
@@ -123,6 +146,64 @@ export default function Profile() {
             src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
             width={120}
           />
+          <br />
+          <Button style={{ marginTop: 10 }} shape="round" onClick={showModal}>
+            Edit Profile
+          </Button>
+          <Modal
+            open={open}
+            title={
+              <div>
+                <Avatar
+                  src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
+                  style={{ backgroundColor: "#f56a00", marginRight: 5 }}
+                />
+
+                <span>Edit Profile</span>
+              </div>
+            }
+            onOk={handleModalOk}
+            onCancel={handleModalCancel}
+            footer={[
+              <Button
+                key="submit"
+                type="primary"
+                loading={loading}
+                onClick={handleModalOk}
+              >
+                Save
+              </Button>,
+            ]}
+          >
+            <Divider style={{ margin: 5 }} />
+            <Input
+              className="simple-label"
+              addonBefore="Name"
+              placeholder="John Hammond"
+              bordered={false}
+            />
+            <Divider style={{ margin: 5 }} />
+            <Input
+              className="simple-label"
+              addonBefore="Bio"
+              placeholder="Add a bio to your profile"
+              bordered={false}
+            />
+            <Divider style={{ margin: 5 }} />
+            <Input
+              className="simple-label"
+              addonBefore="Location"
+              placeholder="Add your location"
+              bordered={false}
+            />
+            <Divider style={{ margin: 5 }} />
+            <Input
+              className="simple-label"
+              addonBefore="Website"
+              placeholder="Add your website"
+              bordered={false}
+            />
+          </Modal>
         </div>
       </div>
       <Divider />

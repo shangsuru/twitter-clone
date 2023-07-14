@@ -18,3 +18,12 @@ html {
   text-decoration: none;
   color: black;
 }
+
+.ant-input-group-addon {
+  color: "black";
+}
+
+.simple-label .ant-input-group-addon {
+  background-color: white;
+  border: none;
+}

@@ -58,9 +58,9 @@ const following: TweetData[] = [
   },
 ];
 
-const onChange = (key: string) => {
+function onChange(key: string) {
   console.log(key);
-};
+}
 
 const items: TabsProps["items"] = [
   {

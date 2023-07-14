@@ -8,25 +8,25 @@ export default function Header() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const showModal = () => {
+  function showModal() {
     setOpen(true);
-  };
+  }
 
-  const handleModalOk = () => {
+  function handleModalOk() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       setOpen(false);
     }, 3000);
-  };
+  }
 
-  const handleModalCancel = () => {
+  function handleModalCancel() {
     setOpen(false);
-  };
+  }
 
-  const onTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  function onTextAreaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     console.log("Change:", e.target.value);
-  };
+  }
 
   return (
     <div style={{ position: "relative" }}>

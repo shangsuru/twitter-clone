@@ -9,8 +9,12 @@ html {
 .main {
   background-color: white;
   width: 50%;
-  height: 97.5vh;
   margin: 0 auto;
   padding: 10px;
   position: "relative";
+}
+
+.no-style-link {
+  text-decoration: none;
+  color: black;
 }

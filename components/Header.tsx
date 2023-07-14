@@ -36,18 +36,21 @@ export default function Header() {
           justifyContent: "center",
         }}
       >
-        <Image
-          src="/twitter_logo.png"
-          width={80}
-          height={60}
-          alt="Twitter Logo"
-        />
+        <Link href="/">
+          <Image
+            src="/twitter_logo.png"
+            width={80}
+            height={60}
+            alt="Twitter Logo"
+          />
+        </Link>
       </div>
       <div style={{ position: "absolute", right: 0, top: 0 }}>
         <Link href="/profile">
-          <Avatar style={{ backgroundColor: "#f56a00", marginRight: 5 }}>
-            H
-          </Avatar>
+          <Avatar
+            src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
+            style={{ backgroundColor: "#f56a00", marginRight: 5 }}
+          />
         </Link>
         <Button type="primary" shape="round" onClick={showModal}>
           Tweet
@@ -56,9 +59,11 @@ export default function Header() {
           open={open}
           title={
             <div>
-              <Avatar style={{ backgroundColor: "#f56a00", marginRight: 5 }}>
-                H
-              </Avatar>
+              <Avatar
+                src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
+                style={{ backgroundColor: "#f56a00", marginRight: 5 }}
+              />
+
               <span>What's happening?</span>
             </div>
           }

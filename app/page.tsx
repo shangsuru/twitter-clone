@@ -4,6 +4,7 @@ import React from "react";
 import { Tabs } from "antd";
 import type { TabsProps } from "antd";
 
+import { AntdStyle } from "@/app/AntdStyle";
 import TweetCard from "@/components/TweetCard";
 
 type TweetData = {
@@ -101,5 +102,9 @@ const items: TabsProps["items"] = [
 ];
 
 export default function Home() {
-  return <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
+  return (
+    <AntdStyle>
+      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+    </AntdStyle>
+  );
 }

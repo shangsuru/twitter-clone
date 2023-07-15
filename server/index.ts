@@ -7,23 +7,25 @@ const handle = app.getRequestHandler();
 const port = process.env.PORT || 3000;
 
 (async () => {
-  try {
-    await app.prepare();
-    const server = express();
+	try {
+		await app.prepare();
+		const server = express();
+		server.use(express.json());
 
-    server.get("/api/todolist", (req: Request, res: Response) => {
-      return res.send({ list: [] });
-    });
+		server.get("/api", (req: Request, res: Response) => {
+			return res.send({ message: "Hello from server!" });
+		});
 
-    server.all("*", (req: Request, res: Response) => {
-      return handle(req, res);
-    });
-    server.listen(port, (err?: any) => {
-      if (err) throw err;
-      console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
-    });
-  } catch (e) {
-    console.error(e);
-    process.exit(1);
-  }
+		server.all("*", (req: Request, res: Response) => {
+			return handle(req, res);
+		});
+
+		server.listen(port, (err?: any) => {
+			if (err) throw err;
+			console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
+		});
+	} catch (e) {
+		console.error(e);
+		process.exit(1);
+	}
 })();

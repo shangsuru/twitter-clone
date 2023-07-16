@@ -68,7 +68,7 @@ export default function Profile() {
     ));
   }
 
-  const { status } = useSession({
+  const { data, status } = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/login");
@@ -81,7 +81,7 @@ export default function Profile() {
 
   return (
     <div>
-      <Header />
+      <Header image={data?.user?.image} />
       <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>

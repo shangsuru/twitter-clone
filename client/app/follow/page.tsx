@@ -78,7 +78,7 @@ const items: TabsProps["items"] = [
 ];
 
 export default function Follow() {
-  const { status } = useSession({
+  const { data, status } = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/login");
@@ -91,7 +91,7 @@ export default function Follow() {
 
   return (
     <>
-      <Header />
+      <Header image={data?.user?.image} />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </>
   );

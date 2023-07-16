@@ -105,7 +105,7 @@ const items: TabsProps["items"] = [
 ];
 
 export default function Feed() {
-  const { status } = useSession({
+  const { data, status } = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/login");
@@ -118,7 +118,7 @@ export default function Feed() {
 
   return (
     <AntdStyle>
-      <Header />
+      <Header image={data?.user?.image} />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </AntdStyle>
   );

@@ -19,24 +19,24 @@ export const LoginButton = () => {
 
 export const LogoutButton = () => {
   return (
-    <Button
-      type="primary"
-      shape="round"
-      style={{ marginRight: 10 }}
-      onClick={() => signOut()}
-    >
+    <Button type="primary" shape="round" onClick={() => signOut()}>
       Sign Out
     </Button>
   );
 };
 
-export const ProfileButton = () => {
+export const ProfileButton = ({
+  image,
+}: {
+  image: string | null | undefined;
+}) => {
   return (
     <Link href="/profile">
-      <Avatar
-        src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-        className="avatar"
-      />
+      {image ? (
+        <Avatar src={image} className="avatar" />
+      ) : (
+        <Avatar src={"/user_icon.png"} className="avatar" />
+      )}
     </Link>
   );
 };

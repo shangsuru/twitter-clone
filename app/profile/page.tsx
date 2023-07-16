@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import Link from "next/link";
 import { Avatar, Button, Divider, Typography, Image, Modal, Input } from "antd";
@@ -90,28 +89,14 @@ export default function Profile() {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          alignItems: "center",
-        }}
-      >
+      <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>
             {user.username}
           </Title>
-          <div style={{ fontWeight: "lighter", color: "grey" }}>
-            {user.handle}
-          </div>
+          <div className="lighter-grey">{user.handle}</div>
           <p>{user.bio}</p>
-          <p
-            style={{
-              display: "flex",
-              gap: 10,
-              color: "grey",
-            }}
-          >
+          <p id="additional-profile-info">
             <span>
               <EnvironmentOutlined /> {user.location}
             </span>
@@ -127,11 +112,7 @@ export default function Profile() {
           </p>
 
           <div>
-            <Link
-              href="/follow"
-              className="no-style-link"
-              style={{ color: "grey" }}
-            >
+            <Link href="/follow" className="no-style-link lighter-grey">
               <span>
                 <Text strong>{user.following_count}</Text> Following
               </span>{" "}
@@ -143,8 +124,8 @@ export default function Profile() {
         </div>
         <div>
           <Image
+            id="profile-image"
             src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-            width={120}
           />
           <br />
           <Button style={{ marginTop: 10 }} shape="round" onClick={showModal}>
@@ -156,7 +137,7 @@ export default function Profile() {
               <div>
                 <Avatar
                   src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-                  style={{ backgroundColor: "#f56a00", marginRight: 5 }}
+                  className="avatar"
                 />
 
                 <span>Edit Profile</span>
@@ -175,28 +156,28 @@ export default function Profile() {
               </Button>,
             ]}
           >
-            <Divider style={{ margin: 5 }} />
+            <Divider />
             <Input
               className="simple-label"
               addonBefore="Name"
               placeholder="John Hammond"
               bordered={false}
             />
-            <Divider style={{ margin: 5 }} />
+            <Divider />
             <Input
               className="simple-label"
               addonBefore="Bio"
               placeholder="Add a bio to your profile"
               bordered={false}
             />
-            <Divider style={{ margin: 5 }} />
+            <Divider />
             <Input
               className="simple-label"
               addonBefore="Location"
               placeholder="Add your location"
               bordered={false}
             />
-            <Divider style={{ margin: 5 }} />
+            <Divider />
             <Input
               className="simple-label"
               addonBefore="Website"

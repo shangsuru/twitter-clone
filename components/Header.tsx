@@ -30,14 +30,10 @@ export default function Header() {
 
   return (
     <div style={{ position: "relative" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <div id="twitter-logo-container">
         <Link href="/">
           <Image
+            id="twitter-logo"
             src="/twitter_logo.png"
             width={80}
             height={60}
@@ -45,23 +41,23 @@ export default function Header() {
           />
         </Link>
       </div>
-      <div style={{ position: "absolute", right: 0, top: 0 }}>
+      <div id="profile-icon-tweet-button">
         <Link href="/profile">
           <Avatar
             src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-            style={{ backgroundColor: "#f56a00", marginRight: 5 }}
+            className="avatar"
           />
         </Link>
         <Button type="primary" shape="round" onClick={showModal}>
           Tweet
-        </Button>
+        </Button>{" "}
         <Modal
           open={open}
           title={
             <div>
               <Avatar
                 src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-                style={{ backgroundColor: "#f56a00", marginRight: 5 }}
+                className="avatar"
               />
 
               <span>What's happening?</span>
@@ -81,9 +77,9 @@ export default function Header() {
           ]}
         >
           <Input.TextArea
+            id="tweet-text-area"
             showCount
             maxLength={200}
-            style={{ height: 120, resize: "none", marginBottom: 20 }}
             onChange={onTextAreaChange}
             placeholder="..."
           />

@@ -19,7 +19,7 @@ export default function TweetCard({
 }: TweetCardProps) {
   return (
     <Link href="/profile" className="no-style-link">
-      <Card style={{ width: 400, margin: 10 }}>
+      <Card className="card">
         <Card.Meta
           avatar={
             <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />
@@ -27,19 +27,15 @@ export default function TweetCard({
           title={
             <div>
               {sender}
-              <span
-                style={{ marginLeft: 5, fontWeight: "lighter", color: "grey" }}
-              >
+              <span style={{ marginLeft: 5 }} className="handle lighter-grey">
                 {handle}{" "}
               </span>
-              <span
-                style={{ float: "right", fontWeight: "lighter", color: "grey" }}
-              >
+              <span style={{ float: "right" }} className="lighter-grey">
                 {timeAgo(created_at)}
               </span>
             </div>
           }
-          description={<div style={{ color: "black" }}>{text}</div>}
+          description={<div className="black">{text}</div>}
         />
       </Card>
     </Link>

@@ -6,11 +6,61 @@ html {
   background-size: cover;
 }
 
+Divider {
+  margin-top: 5px;
+}
+
+#profile-icon-tweet-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#tweet-text-area {
+  height: 120px;
+  resize: none;
+  margin-bottom: 20px;
+}
+
+#twitter-logo-container {
+  display: flex;
+  justify-content: center;
+}
+
+#profile-image {
+  width: 15vw;
+  max-width: 160px;
+  margin-top: 30px;
+}
+
+#profile-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: top;
+}
+
+#additional-profile-info {
+  display: flex;
+  gap: 20px;
+  color: grey;
+}
+
+.avatar {
+  background-color: #f56a00;
+  margin-right: 5px;
+}
+
+.card {
+  width: 400px;
+  margin: 10px;
+}
+
 .main {
   background-color: white;
   width: 50%;
+  min-height: 95vh;
   margin: 0 auto;
-  padding: 10px;
+  padding: 20px;
   position: "relative";
 }
 
@@ -20,10 +70,62 @@ html {
 }
 
 .ant-input-group-addon {
-  color: "black";
+  color: black;
+}
+
+.lighter-grey {
+  font-weight: lighter;
+  color: grey;
+}
+
+.black {
+  color: black;
 }
 
 .simple-label .ant-input-group-addon {
   background-color: white;
   border: none;
+}
+
+@media (max-width: 1600px) {
+  .main {
+    width: 70%;
+  }
+
+  #additional-profile-info {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+@media (max-width: 550px) {
+  #profile-image {
+    display: none;
+  }
+
+  .main {
+    width: 90%;
+  }
+
+  #profile-header {
+    flex-direction: column;
+    align-items: left;
+  }
+
+  #twitter-logo-container {
+    justify-content: left;
+  }
+
+  #twitter-logo {
+    width: 40px;
+    height: 30px;
+  }
+
+  .card {
+    width: 90%;
+  }
+
+  .handle {
+    display: none;
+  }
 }

@@ -11,7 +11,7 @@ interface UserCardProps {
 export default function UserCard({ username, handle, bio }: UserCardProps) {
   return (
     <Link href="/profile" className="no-style-link">
-      <Card style={{ width: 400, margin: 10 }}>
+      <Card className="card">
         <Card.Meta
           avatar={
             <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />
@@ -20,12 +20,10 @@ export default function UserCard({ username, handle, bio }: UserCardProps) {
             <div>
               {username}
               <br />
-              <span style={{ fontWeight: "lighter", color: "grey" }}>
-                {handle}
-              </span>
+              <span className="lighter-grey">{handle}</span>
             </div>
           }
-          description={<div style={{ color: "black" }}>{bio}</div>}
+          description={<div className="black">{bio}</div>}
         />
       </Card>
     </Link>

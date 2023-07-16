@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { Avatar, Button, Divider, Modal, Input } from "antd";
+import { Avatar, Button, Input, Modal } from "antd";
 
-export default function EditProfileModal() {
+export default function TweetModal() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -22,11 +22,15 @@ export default function EditProfileModal() {
     setOpen(false);
   }
 
+  function onTextAreaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    console.log("Change:", e.target.value);
+  }
+
   return (
     <>
-      <Button style={{ marginTop: 10 }} shape="round" onClick={showModal}>
-        Edit Profile
-      </Button>
+      <Button type="primary" shape="round" onClick={showModal}>
+        Tweet
+      </Button>{" "}
       <Modal
         open={open}
         title={
@@ -36,7 +40,7 @@ export default function EditProfileModal() {
               className="avatar"
             />
 
-            <span>Edit Profile</span>
+            <span>What's happening?</span>
           </div>
         }
         onOk={handleModalOk}
@@ -48,37 +52,16 @@ export default function EditProfileModal() {
             loading={loading}
             onClick={handleModalOk}
           >
-            Save
+            Tweet
           </Button>,
         ]}
       >
-        <Divider />
-        <Input
-          className="simple-label"
-          addonBefore="Name"
-          placeholder="John Hammond"
-          bordered={false}
-        />
-        <Divider />
-        <Input
-          className="simple-label"
-          addonBefore="Bio"
-          placeholder="Add a bio to your profile"
-          bordered={false}
-        />
-        <Divider />
-        <Input
-          className="simple-label"
-          addonBefore="Location"
-          placeholder="Add your location"
-          bordered={false}
-        />
-        <Divider />
-        <Input
-          className="simple-label"
-          addonBefore="Website"
-          placeholder="Add your website"
-          bordered={false}
+        <Input.TextArea
+          id="tweet-text-area"
+          showCount
+          maxLength={200}
+          onChange={onTextAreaChange}
+          placeholder="..."
         />
       </Modal>
     </>

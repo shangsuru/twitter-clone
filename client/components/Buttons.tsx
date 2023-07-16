@@ -6,7 +6,12 @@ import { Avatar, Button } from "antd";
 
 export const LoginButton = () => {
   return (
-    <Button style={{ marginRight: 10 }} onClick={() => signIn()}>
+    <Button
+      type="primary"
+      shape="round"
+      style={{ marginRight: 10 }}
+      onClick={() => signIn()}
+    >
       Sign in
     </Button>
   );
@@ -14,7 +19,12 @@ export const LoginButton = () => {
 
 export const LogoutButton = () => {
   return (
-    <Button style={{ marginRight: 10 }} onClick={() => signOut()}>
+    <Button
+      type="primary"
+      shape="round"
+      style={{ marginRight: 10 }}
+      onClick={() => signOut()}
+    >
       Sign Out
     </Button>
   );

@@ -2,9 +2,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import TweetModal from "./TweetModal";
-import { ProfileButton } from "./Buttons";
+import { LogoutButton, ProfileButton } from "./Buttons";
 
 export default function Header() {
   return (
@@ -21,8 +22,14 @@ export default function Header() {
         </Link>
       </div>
       <div id="profile-icon-tweet-button">
-        <ProfileButton />
-        <TweetModal />
+        {usePathname() == "/profile" ? (
+          <LogoutButton />
+        ) : (
+          <>
+            <ProfileButton />
+            <TweetModal />
+          </>
+        )}
       </div>
     </div>
   );

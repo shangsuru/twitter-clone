@@ -6,6 +6,8 @@ import type { TabsProps } from "antd";
 
 import { AntdStyle } from "@/app/AntdStyle";
 import TweetCard from "@/components/TweetCard";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 type TweetData = {
   sender: string;
@@ -101,7 +103,18 @@ const items: TabsProps["items"] = [
   },
 ];
 
-export default function Home() {
+export default function Feed() {
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/login");
+    },
+  });
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
   return (
     <AntdStyle>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />

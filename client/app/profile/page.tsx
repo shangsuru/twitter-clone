@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 import { Divider, Typography, Image } from "antd";
 import {
   EnvironmentOutlined,
@@ -63,6 +65,17 @@ export default function Profile() {
         created_at={tweet.created_at}
       />
     ));
+  }
+
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/login");
+    },
+  });
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
   }
 
   return (

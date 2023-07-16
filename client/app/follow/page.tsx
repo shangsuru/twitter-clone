@@ -3,6 +3,8 @@
 import React from "react";
 import { Tabs } from "antd";
 import type { TabsProps } from "antd";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 import UserCard from "@/components/UserCard";
 
@@ -75,5 +77,16 @@ const items: TabsProps["items"] = [
 ];
 
 export default function Follow() {
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/login");
+    },
+  });
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
   return <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
 }

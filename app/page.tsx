@@ -75,8 +75,8 @@ function onChange(key: string) {
 const items: TabsProps["items"] = [
   {
     key: "1",
-    label: "All",
-    children: all.map((tweet) => (
+    label: "Following",
+    children: following.map((tweet) => (
       <TweetCard
         key={tweet.handle}
         sender={tweet.sender}
@@ -88,8 +88,8 @@ const items: TabsProps["items"] = [
   },
   {
     key: "2",
-    label: "Following",
-    children: following.map((tweet) => (
+    label: "All",
+    children: all.map((tweet) => (
       <TweetCard
         key={tweet.handle}
         sender={tweet.sender}

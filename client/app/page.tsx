@@ -8,6 +8,7 @@ import { AntdStyle } from "@/app/AntdStyle";
 import TweetCard from "@/components/TweetCard";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import Header from "@/components/Header";
 
 type TweetData = {
   sender: string;
@@ -117,6 +118,7 @@ export default function Feed() {
 
   return (
     <AntdStyle>
+      <Header />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </AntdStyle>
   );

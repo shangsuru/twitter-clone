@@ -13,6 +13,7 @@ import {
 import TweetCard from "@/components/TweetCard";
 import EditProfileModal from "@/components/EditProfileModal";
 import { timeAgo } from "@/utils/utils";
+import Header from "@/components/Header";
 
 const { Title, Text } = Typography;
 
@@ -80,6 +81,7 @@ export default function Profile() {
 
   return (
     <div>
+      <Header />
       <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>

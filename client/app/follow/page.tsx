@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 import UserCard from "@/components/UserCard";
+import Header from "@/components/Header";
 
 type UserData = {
   username: string;
@@ -88,5 +89,10 @@ export default function Follow() {
     return <p>Loading...</p>;
   }
 
-  return <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
+  return (
+    <>
+      <Header />
+      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+    </>
+  );
 }

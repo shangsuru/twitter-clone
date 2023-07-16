@@ -10,6 +10,15 @@ Divider {
   margin-top: 5px;
 }
 
+#login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  flex-direction: column;
+  gap: 20px;
+}
+
 #profile-icon-tweet-button {
   position: absolute;
   right: 0;
@@ -126,6 +135,10 @@ Divider {
   }
 
   .handle {
+    display: none;
+  }
+
+  #click-here {
     display: none;
   }
 }

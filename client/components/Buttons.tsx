@@ -3,16 +3,12 @@
 import { signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { Avatar, Button } from "antd";
+import { GoogleOutlined } from "@ant-design/icons";
 
 export const LoginButton = () => {
   return (
-    <Button
-      type="primary"
-      shape="round"
-      style={{ marginRight: 10 }}
-      onClick={() => signIn()}
-    >
-      Sign in
+    <Button type="primary" shape="round" onClick={() => signIn()} danger>
+      <GoogleOutlined /> Sign in with Google
     </Button>
   );
 };

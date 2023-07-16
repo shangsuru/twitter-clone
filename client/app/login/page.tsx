@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 
 import { LoginButton, LogoutButton } from "@/components/Buttons";
 import { redirect } from "next/navigation";
+import { Image } from "antd";
 
 export default function Login() {
   const { data: session } = useSession();
@@ -18,17 +19,20 @@ export default function Login() {
   }, [session]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "70vh",
-      }}
-    >
+    <div id="login">
       <div>
-        <div>{`${JSON.stringify(user)}`}</div>
+        <Image
+          id="click-here"
+          preview={false}
+          src="/click_here.png"
+          width={500}
+        />
+      </div>
+      <div>
         <LoginButton />
+      </div>
+      <div>
+        <Image preview={false} src="/elon.png" width={500} />
       </div>
     </div>
   );

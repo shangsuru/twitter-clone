@@ -2,9 +2,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Avatar, Button, Input, Modal } from "antd";
 
 import TweetModal from "./TweetModal";
+import { ProfileButton } from "./Buttons";
 
 export default function Header() {
   return (
@@ -21,12 +21,7 @@ export default function Header() {
         </Link>
       </div>
       <div id="profile-icon-tweet-button">
-        <Link href="/profile">
-          <Avatar
-            src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-            className="avatar"
-          />
-        </Link>
+        <ProfileButton />
         <TweetModal />
       </div>
     </div>

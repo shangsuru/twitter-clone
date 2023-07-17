@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 
 import UserCard from "@/components/UserCard";
 import Header from "@/components/Header";
+import { AntdStyle } from "../AntdStyle";
 
 type UserData = {
   username: string;
@@ -90,9 +91,9 @@ export default function Follow() {
   }
 
   return (
-    <>
+    <AntdStyle>
       <Header image={data?.user?.image} />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-    </>
+    </AntdStyle>
   );
 }

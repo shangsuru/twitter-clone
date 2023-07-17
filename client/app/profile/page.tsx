@@ -14,6 +14,7 @@ import TweetCard from "@/components/TweetCard";
 import EditProfileModal from "@/components/EditProfileModal";
 import { timeAgo } from "@/utils/utils";
 import Header from "@/components/Header";
+import { AntdStyle } from "../AntdStyle";
 
 const { Title, Text } = Typography;
 
@@ -80,7 +81,7 @@ export default function Profile() {
   }
 
   return (
-    <div>
+    <AntdStyle>
       <Header image={data?.user?.image} />
       <div id="profile-header">
         <div>
@@ -127,6 +128,6 @@ export default function Profile() {
       <Divider />
       <Title level={5}>Your Tweets</Title>
       <div style={{ marginTop: 20 }}>{renderTweets(ownTweets)}</div>
-    </div>
+    </AntdStyle>
   );
 }

@@ -119,7 +119,8 @@ export default function Profile() {
         <div>
           <Image
             id="profile-image"
-            src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
+            preview={false}
+            src={data?.user?.image ?? "/user_icon.png"}
           />
           <br />
           <EditProfileModal />

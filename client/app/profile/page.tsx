@@ -57,18 +57,6 @@ export default function Profile() {
     },
   ];
 
-  function renderTweets(tweets: TweetData[]) {
-    return ownTweets.map((tweet) => (
-      <TweetCard
-        key={tweet.handle}
-        sender={tweet.sender}
-        handle={tweet.handle}
-        text={tweet.text}
-        created_at={tweet.created_at}
-      />
-    ));
-  }
-
   const { data, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -129,7 +117,17 @@ export default function Profile() {
       </div>
       <Divider />
       <Title level={5}>Your Tweets</Title>
-      <div style={{ marginTop: 20 }}>{renderTweets(ownTweets)}</div>
+      <div style={{ marginTop: 20 }}>
+        {ownTweets.map((tweet) => (
+          <TweetCard
+            key={tweet.handle}
+            sender={tweet.sender}
+            handle={tweet.handle}
+            text={tweet.text}
+            created_at={tweet.created_at}
+          />
+        ))}
+      </div>
     </AntdStyle>
   );
 }

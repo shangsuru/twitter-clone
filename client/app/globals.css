@@ -142,3 +142,9 @@ Divider {
     display: none;
   }
 }
+
+@media (max-height: 800px) {
+  #click-here {
+    display: none;
+  }
+}

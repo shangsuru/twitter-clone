@@ -7,7 +7,7 @@ interface TweetCardProps {
   sender: string;
   handle: string;
   text: string;
-  created_at: number;
+  createdAt: number;
   key: React.Key;
 }
 
@@ -15,7 +15,7 @@ export default function TweetCard({
   sender,
   handle,
   text,
-  created_at,
+  createdAt,
 }: TweetCardProps) {
   return (
     <Link href="/profile" className="no-style-link">
@@ -31,7 +31,7 @@ export default function TweetCard({
                 {handle}{" "}
               </span>
               <span style={{ float: "right" }} className="lighter-grey">
-                {timeAgo(created_at)}
+                {timeAgo(createdAt)}
               </span>
             </div>
           }

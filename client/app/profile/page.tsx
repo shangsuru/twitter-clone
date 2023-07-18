@@ -24,7 +24,7 @@ type UserData = {
   bio: string;
   location: string;
   website: string;
-  created_at: number;
+  createdAt: number;
   following_count: number;
   followers_count: number;
 };
@@ -33,7 +33,7 @@ type TweetData = {
   sender: string;
   handle: string;
   text: string;
-  created_at: number;
+  createdAt: number;
 };
 
 export default function Profile() {
@@ -43,7 +43,7 @@ export default function Profile() {
     bio: "Hacker. Friend. Cybersecurity Researcher @HuntressLabs",
     location: "San Francisco, LA",
     website: "j-h.io/links",
-    created_at: 1435901330,
+    createdAt: 1435901330,
     following_count: 2035,
     followers_count: 196400,
   };
@@ -53,7 +53,7 @@ export default function Profile() {
       sender: "John Hammond",
       handle: "@_JohnHammond",
       text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
-      created_at: 1689315000,
+      createdAt: 1689315000,
     },
   ];
 
@@ -89,7 +89,7 @@ export default function Profile() {
               </Typography.Link>
             </span>
             <span>
-              <CalendarOutlined /> {timeAgo(user.created_at)}
+              <CalendarOutlined /> {timeAgo(user.createdAt)}
             </span>
           </p>
 
@@ -124,7 +124,7 @@ export default function Profile() {
             sender={tweet.sender}
             handle={tweet.handle}
             text={tweet.text}
-            created_at={tweet.created_at}
+            createdAt={tweet.createdAt}
           />
         ))}
       </div>

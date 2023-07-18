@@ -116,9 +116,11 @@ export default function Feed() {
     return <p>Loading...</p>;
   }
 
+  const image = data?.user?.image ?? "/user_icon.png";
+
   return (
     <AntdStyle>
-      <Header image={data?.user?.image} />
+      <Header image={image} />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </AntdStyle>
   );

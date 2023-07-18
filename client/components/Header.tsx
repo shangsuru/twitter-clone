@@ -7,11 +7,7 @@ import { usePathname } from "next/navigation";
 import TweetModal from "./TweetModal";
 import { LogoutButton, ProfileButton } from "./Buttons";
 
-export default function Header({
-  image,
-}: {
-  image: string | null | undefined;
-}) {
+export default function Header({ image }: { image: string }) {
   return (
     <div style={{ position: "relative" }}>
       <div id="twitter-logo-container">

@@ -2,7 +2,18 @@ import { Request, Response } from "express";
 import User from "../models/User";
 
 function getUser(req: Request, res: Response) {
-  res.send("Read profile information");
+  const { userId } = req.params;
+
+  User.query("handle")
+    .eq(userId)
+    .exec()
+    .then((users) => {
+      if (users.length > 0) {
+        res.send(users[0]);
+      } else {
+        res.status(404).send({ message: "User not found" });
+      }
+    });
 }
 
 function createUser(req: Request, res: Response) {

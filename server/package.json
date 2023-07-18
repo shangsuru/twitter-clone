@@ -12,11 +12,13 @@
   "author": "Henry Helm",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dynamoose": "^3.2.0",
     "express": "^4.18.2",
     "typescript": "^5.1.6"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/node": "^20.4.2",
     "nodemon": "^3.0.1"

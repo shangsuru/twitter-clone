@@ -1,7 +1,29 @@
 import { Request, Response } from "express";
+import User from "../models/User";
 
 function getUser(req: Request, res: Response) {
   res.send("Read profile information");
+}
+
+function createUser(req: Request, res: Response) {
+  const { handle, username } = req.body;
+
+  User.query("handle")
+    .eq(handle)
+    .exec()
+    .then((users) => {
+      if (users.length > 0) {
+        res.status(403).send({ message: "User already exists" });
+      } else {
+        const newUser = new User({
+          handle: handle,
+          username: username,
+        });
+        newUser.save().then((user) => {
+          res.send(user);
+        });
+      }
+    });
 }
 
 function updateUser(req: Request, res: Response) {
@@ -31,4 +53,5 @@ export {
   unfollowUser,
   getFollowing,
   getFollowers,
+  createUser,
 };

@@ -121,6 +121,7 @@ export default function Profile() {
             id="profile-image"
             preview={false}
             src={data?.user?.image ?? "/user_icon.png"}
+            alt="Profile Image"
           />
           <br />
           <EditProfileModal />

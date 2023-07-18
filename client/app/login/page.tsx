@@ -24,13 +24,14 @@ export default function Login() {
             preview={false}
             src="/click_here.png"
             width={500}
+            alt="Click here"
           />
         </div>
         <div>
           <LoginButton />
         </div>
         <div>
-          <Image preview={false} src="/elon.png" width={500} />
+          <Image preview={false} src="/elon.png" width={500} alt="Elon" />
         </div>
       </div>
     </AntdStyle>

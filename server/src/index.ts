@@ -7,5 +7,5 @@ const port = 4000;
 routes(app);
 
 app.listen(port, () => {
-  console.log(`[Server]: I am running at https://localhost:${port}`);
+  console.log(`[Server]: I am running at http://localhost:${port}`);
 });

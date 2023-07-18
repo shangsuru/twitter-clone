@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Tabs } from "antd";
-import type { TabsProps } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
 
 import { AntdStyle } from "@/app/AntdStyle";
@@ -10,13 +9,6 @@ import TweetCard from "@/components/TweetCard";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Header from "@/components/Header";
-
-type TweetData = {
-  sender: string;
-  handle: string;
-  text: string;
-  createdAt: number;
-};
 
 const all: TweetData[] = [
   {

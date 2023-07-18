@@ -18,24 +18,6 @@ import { AntdStyle } from "../AntdStyle";
 
 const { Title, Text } = Typography;
 
-type UserData = {
-  username: string;
-  handle: string;
-  bio: string;
-  location: string;
-  website: string;
-  createdAt: number;
-  following_count: number;
-  followers_count: number;
-};
-
-type TweetData = {
-  sender: string;
-  handle: string;
-  text: string;
-  createdAt: number;
-};
-
 export default function Profile() {
   const user: UserData = {
     username: "John Hammond",

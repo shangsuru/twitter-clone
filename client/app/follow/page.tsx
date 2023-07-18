@@ -10,12 +10,6 @@ import UserCard from "@/components/UserCard";
 import Header from "@/components/Header";
 import { AntdStyle } from "../AntdStyle";
 
-type UserData = {
-  username: string;
-  handle: string;
-  bio: string;
-};
-
 const followers: UserData[] = [
   {
     username: "Gynvael Coldwind",

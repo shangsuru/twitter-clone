@@ -42,7 +42,7 @@ export default function TweetModal({
           <div>
             <ProfileButton image={image} />
 
-            <span>What's happening?</span>
+            <span>{"What's happening?"}</span>
           </div>
         }
         onOk={handleModalOk}

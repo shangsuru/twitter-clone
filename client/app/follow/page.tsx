@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Tabs } from "antd";
-import type { TabsProps } from "antd";
+import type { Tab } from "rc-tabs/lib/interface";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 
@@ -51,7 +51,7 @@ const onChange = (key: string) => {
   console.log(key);
 };
 
-const items: TabsProps["items"] = [
+const items: Tab[] = [
   {
     key: "1",
     label: "Followers",

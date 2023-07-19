@@ -18,17 +18,6 @@ import { AntdStyle } from "../AntdStyle";
 
 const { Title, Text } = Typography;
 
-type UserData = {
-  username: string;
-  handle: string;
-  bio?: string;
-  location?: string;
-  website?: string;
-  created_at: number;
-  following_count?: number;
-  followers_count?: number;
-};
-
 type TweetData = {
   sender: string;
   handle: string;
@@ -36,46 +25,42 @@ type TweetData = {
   created_at: number;
 };
 
+type UserData = {
+  created_at: number;
+  handle: string;
+  username: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+};
+
+const ownTweets: TweetData[] = [
+  {
+    sender: "John Hammond",
+    handle: "@_JohnHammond",
+    text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
+    created_at: 1689315000,
+  },
+];
+
+function renderTweets(tweets: TweetData[]) {
+  return tweets.map((tweet) => (
+    <TweetCard
+      key={tweet.handle}
+      sender={tweet.sender}
+      handle={tweet.handle}
+      text={tweet.text}
+      created_at={tweet.created_at}
+    />
+  ));
+}
+
 export default function Profile() {
   const [username, setUsername] = useState("");
-  const [bio, setBio] = useState(null);
-  const [location, setLocation] = useState(null);
-  const [website, setWebsite] = useState(null);
-  const [created_at, setCreated_at] = useState(0);
-  const [following_count, setFollowing_count] = useState(0);
-  const [followers_count, setFollowers_count] = useState(0);
-
-  const user: UserData = {
-    username: "John Hammond",
-    handle: "@_JohnHammond",
-    bio: "Hacker. Friend. Cybersecurity Researcher @HuntressLabs",
-    location: "San Francisco, LA",
-    website: "j-h.io/links",
-    created_at: 1435901330,
-    following_count: 2035,
-    followers_count: 196400,
-  };
-
-  const ownTweets: TweetData[] = [
-    {
-      sender: "John Hammond",
-      handle: "@_JohnHammond",
-      text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
-      created_at: 1689315000,
-    },
-  ];
-
-  function renderTweets(tweets: TweetData[]) {
-    return ownTweets.map((tweet) => (
-      <TweetCard
-        key={tweet.handle}
-        sender={tweet.sender}
-        handle={tweet.handle}
-        text={tweet.text}
-        created_at={tweet.created_at}
-      />
-    ));
-  }
+  const [bio, setBio] = useState("");
+  const [location, setLocation] = useState("");
+  const [website, setWebsite] = useState("");
+  const [createdAt, setCreatedAt] = useState(0);
 
   const { data, status } = useSession({
     required: true,
@@ -93,13 +78,12 @@ export default function Profile() {
 
   fetch(`http://localhost:4000/users/profile/${handle}`).then((res) => {
     if (res.ok) {
-      res.json().then((data) => {
-        console.log(data);
+      res.json().then((data: UserData) => {
         setUsername(data.username);
-        setBio(data.bio);
-        setLocation(data.location);
-        setWebsite(data.website);
-        setCreated_at(data.created_at);
+        if (data.bio) setBio(data.bio);
+        if (data.location) setLocation(data.location);
+        if (data.website) setWebsite(data.website);
+        setCreatedAt(data.created_at);
       });
     }
   });
@@ -123,21 +107,23 @@ export default function Profile() {
             {website && (
               <span>
                 <LinkOutlined />{" "}
-                <Typography.Link href={website}>{website}</Typography.Link>
+                <Typography.Link href={`https://${website}`}>
+                  {website}
+                </Typography.Link>
               </span>
             )}
             <span>
-              <CalendarOutlined /> {timeToDate(created_at)}
+              <CalendarOutlined /> {timeToDate(createdAt)}
             </span>
           </p>
 
           <div>
             <Link href="/follow" className="no-style-link lighter-grey">
               <span>
-                <Text strong>{following_count}</Text> Following
+                <Text strong>{0}</Text> Following
               </span>{" "}
               <span>
-                <Text strong>{followers_count}</Text> Followers
+                <Text strong>{0}</Text> Followers
               </span>
             </Link>
           </div>
@@ -145,7 +131,28 @@ export default function Profile() {
         <div>
           <Image id="profile-image" preview={false} src={image} />
           <br />
-          <EditProfileModal />
+
+          {username && (
+            <EditProfileModal
+              image={image}
+              username={username}
+              bio={bio}
+              location={location}
+              website={website}
+              JWT={data.token}
+              updateState={(
+                newUsername: string,
+                newBio: string,
+                newLocation: string,
+                newWebsite: string
+              ): void => {
+                setUsername(newUsername);
+                setBio(newBio);
+                setLocation(newLocation);
+                setWebsite(newWebsite);
+              }}
+            />
+          )}
         </div>
       </div>
       <Divider />

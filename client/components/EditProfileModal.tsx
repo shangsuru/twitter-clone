@@ -2,9 +2,34 @@
 import React, { useState } from "react";
 import { Avatar, Button, Divider, Modal, Input } from "antd";
 
-export default function EditProfileModal() {
+export default function EditProfileModal({
+  image,
+  username,
+  bio,
+  location,
+  website,
+  JWT,
+  updateState,
+}: {
+  image: string;
+  username: string;
+  bio: string | undefined;
+  location: string | undefined;
+  website: string | undefined;
+  JWT: string;
+  updateState: (
+    newUsername: string,
+    newBio: string,
+    newLocation: string,
+    newWebsite: string
+  ) => void;
+}) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [inputName, setInputName] = useState(username);
+  const [inputBio, setInputBio] = useState(bio);
+  const [inputLocation, setInputLocation] = useState(location);
+  const [inputWebsite, setInputWebsite] = useState(website);
 
   function showModal() {
     setOpen(true);
@@ -12,10 +37,24 @@ export default function EditProfileModal() {
 
   function handleModalOk() {
     setLoading(true);
-    setTimeout(() => {
+    website = inputWebsite!.replace("https://", "");
+    fetch(`http://localhost:4000/users/profile`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+      body: JSON.stringify({
+        username: inputName,
+        bio: inputBio,
+        website: website,
+        location: inputLocation,
+      }),
+    }).then(() => {
+      updateState(inputName, inputBio!, inputLocation!, website!);
       setLoading(false);
       setOpen(false);
-    }, 3000);
+    });
   }
 
   function handleModalCancel() {
@@ -31,10 +70,7 @@ export default function EditProfileModal() {
         open={open}
         title={
           <div>
-            <Avatar
-              src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-              className="avatar"
-            />
+            <Avatar src={image} className="avatar" />
 
             <span>Edit Profile</span>
           </div>
@@ -56,29 +92,45 @@ export default function EditProfileModal() {
         <Input
           className="simple-label"
           addonBefore="Name"
-          placeholder="John Hammond"
+          placeholder="Add your name"
+          value={inputName}
           bordered={false}
+          onChange={(e) => {
+            setInputName(e.target.value);
+          }}
         />
         <Divider />
         <Input
           className="simple-label"
           addonBefore="Bio"
           placeholder="Add a bio to your profile"
+          value={inputBio}
           bordered={false}
+          onChange={(e) => {
+            setInputBio(e.target.value);
+          }}
         />
         <Divider />
         <Input
           className="simple-label"
           addonBefore="Location"
           placeholder="Add your location"
+          value={inputLocation}
           bordered={false}
+          onChange={(e) => {
+            setInputLocation(e.target.value);
+          }}
         />
         <Divider />
         <Input
           className="simple-label"
           addonBefore="Website"
           placeholder="Add your website"
+          value={inputWebsite}
           bordered={false}
+          onChange={(e) => {
+            setInputWebsite(e.target.value);
+          }}
         />
       </Modal>
     </>

@@ -1,8 +1,14 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import jwt from "jsonwebtoken";
 
 function getUser(req: Request, res: Response) {
   const { userId } = req.params;
+
+  if (!userId) {
+    res.status(400).send({ message: "Bad Request" });
+    return;
+  }
 
   User.query("handle")
     .eq(userId)
@@ -18,6 +24,11 @@ function getUser(req: Request, res: Response) {
 
 function createUser(req: Request, res: Response) {
   const { handle, username } = req.body;
+
+  if (!handle || !username) {
+    res.status(400).send({ message: "Bad Request" });
+    return;
+  }
 
   User.query("handle")
     .eq(handle)
@@ -38,7 +49,44 @@ function createUser(req: Request, res: Response) {
 }
 
 function updateUser(req: Request, res: Response) {
-  res.send("Update profile information");
+  const { username, bio, location, website } = req.body;
+  if (!username || !bio || !location || !website) {
+    res.status(400).send({ message: "Bad Request" });
+    return;
+  }
+
+  let authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+
+      User.query("handle")
+        .eq(handle)
+        .exec()
+        .then((users) => {
+          if (users.length == 0) {
+            res.status(505).send({ message: "Internal Server Error" });
+          } else {
+            let user = users[0];
+            user.username = username;
+            user.bio = bio;
+            user.location = location;
+            user.website = website;
+            user.save().then((user) => {
+              res.send(user);
+            });
+          }
+        });
+    }
+  });
 }
 
 function followUser(req: Request, res: Response) {

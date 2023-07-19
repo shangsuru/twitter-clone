@@ -2,10 +2,12 @@ import express, { Express, Request, Response } from "express";
 import routes from "./routes/routes";
 import dynamoose from "dynamoose";
 import cors from "cors";
+import dotenv from "dotenv";
 
 const app: Express = express();
 const port = 4000;
 
+dotenv.config();
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:3000" }));
 

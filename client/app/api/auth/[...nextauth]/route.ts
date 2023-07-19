@@ -22,19 +22,16 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user }) {
       const handle = user?.email?.split("@")[0];
-      const response = await fetch(
-        `${process.env.PUBLIC_API_URL}/users/profile`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            handle: handle,
-            username: user?.name,
-          }),
-        }
-      );
+      await fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          handle: handle,
+          username: user?.name,
+        }),
+      });
       return true;
     },
     async jwt({ token, user, account }) {

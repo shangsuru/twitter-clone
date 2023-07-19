@@ -14,7 +14,7 @@ import TweetCard from "@/components/TweetCard";
 import EditProfileModal from "@/components/EditProfileModal";
 import { timeToDate } from "@/utils/utils";
 import Header from "@/components/Header";
-import { AntdStyle } from "../AntdStyle";
+import { AntdStyle } from "../../AntdStyle";
 
 const { Title, Text } = Typography;
 
@@ -29,6 +29,7 @@ type UserData = {
   created_at: number;
   handle: string;
   username: string;
+  image: string;
   bio?: string;
   location?: string;
   website?: string;
@@ -55,11 +56,14 @@ function renderTweets(tweets: TweetData[]) {
   ));
 }
 
-export default function Profile() {
+export default function Profile({ params }: { params: { userId: string } }) {
+  console.log(params);
   const [username, setUsername] = useState("");
+  const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
   const [website, setWebsite] = useState("");
+  const [image, setImage] = useState("/user_icon.png");
   const [createdAt, setCreatedAt] = useState(0);
 
   const { data, status } = useSession({
@@ -73,13 +77,14 @@ export default function Profile() {
     return <p>Loading...</p>;
   }
 
-  const image = data?.user?.image ?? "/user_icon.png";
-  const handle = data?.user?.email!.split("@")[0];
+  const ownHandle = data?.user?.email!.split("@")[0];
 
-  fetch(`http://localhost:4000/users/profile/${handle}`).then((res) => {
+  fetch(`http://localhost:4000/users/profile/${params.userId}`).then((res) => {
     if (res.ok) {
       res.json().then((data: UserData) => {
         setUsername(data.username);
+        setImage(data.image);
+        setHandle(data.handle);
         if (data.bio) setBio(data.bio);
         if (data.location) setLocation(data.location);
         if (data.website) setWebsite(data.website);
@@ -90,7 +95,7 @@ export default function Profile() {
 
   return (
     <AntdStyle>
-      <Header image={image} />
+      <Header handle={ownHandle!} image={image} />
       <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>

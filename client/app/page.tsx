@@ -117,10 +117,11 @@ export default function Feed() {
   }
 
   const image = data?.user?.image ?? "/user_icon.png";
+  const handle = data?.user?.email!.split("@")[0];
 
   return (
     <AntdStyle>
-      <Header image={image} />
+      <Header image={image} handle={handle!} />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </AntdStyle>
   );

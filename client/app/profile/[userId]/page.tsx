@@ -170,7 +170,39 @@ export default function Profile({ params }: { params: { userId: string } }) {
             <Button
               style={{ marginTop: 10 }}
               shape="round"
-              onClick={() => setFollowed(!followed)}
+              onClick={() => {
+                if (followed) {
+                  fetch(`http://localhost:4000/users/unfollow`, {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${data.token}`,
+                    },
+                    body: JSON.stringify({
+                      userId: params.userId,
+                    }),
+                  }).then((res) => {
+                    if (res.ok) {
+                      setFollowed(!followed);
+                    }
+                  });
+                } else {
+                  fetch(`http://localhost:4000/users/follow`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${data.token}`,
+                    },
+                    body: JSON.stringify({
+                      userId: params.userId,
+                    }),
+                  }).then((res) => {
+                    if (res.ok) {
+                      setFollowed(!followed);
+                    }
+                  });
+                }
+              }}
             >
               {followed ? "Unfollow" : "Follow"}
             </Button>

@@ -22,11 +22,11 @@ type TweetData = {
   sender: string;
   handle: string;
   text: string;
-  created_at: number;
+  createdAt: number;
 };
 
 type UserData = {
-  created_at: number;
+  createdAt: number;
   handle: string;
   username: string;
   image: string;
@@ -40,7 +40,7 @@ const ownTweets: TweetData[] = [
     sender: "John Hammond",
     handle: "@_JohnHammond",
     text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
-    created_at: 1689315000,
+    createdAt: 1689315000,
   },
 ];
 
@@ -51,7 +51,7 @@ function renderTweets(tweets: TweetData[]) {
       sender={tweet.sender}
       handle={tweet.handle}
       text={tweet.text}
-      created_at={tweet.created_at}
+      createdAt={tweet.createdAt}
     />
   ));
 }
@@ -89,7 +89,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
         if (data.bio) setBio(data.bio);
         if (data.location) setLocation(data.location);
         if (data.website) setWebsite(data.website);
-        setCreatedAt(data.created_at);
+        setCreatedAt(data.createdAt);
       });
     }
   });

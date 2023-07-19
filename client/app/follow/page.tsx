@@ -2,19 +2,13 @@
 
 import React from "react";
 import { Tabs } from "antd";
-import type { TabsProps } from "antd";
+import type { Tab } from "rc-tabs/lib/interface";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 import UserCard from "@/components/UserCard";
 import Header from "@/components/Header";
 import { AntdStyle } from "../AntdStyle";
-
-type UserData = {
-  username: string;
-  handle: string;
-  bio: string;
-};
 
 const followers: UserData[] = [
   {
@@ -51,7 +45,7 @@ const onChange = (key: string) => {
   console.log(key);
 };
 
-const items: TabsProps["items"] = [
+const items: Tab[] = [
   {
     key: "1",
     label: "Followers",

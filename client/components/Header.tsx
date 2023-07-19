@@ -33,7 +33,7 @@ export default function Header({
         ) : (
           <>
             <ProfileButton image={image} handle={handle} />
-            <TweetModal image={image} />
+            <TweetModal image={image} handle={handle} />
           </>
         )}
       </div>

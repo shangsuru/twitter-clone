@@ -7,7 +7,7 @@ interface UserData {
   website?: string;
   location?: string;
   image: string;
-  created_at: number;
+  createdAt: number;
 }
 
 const users: UserData[] = [
@@ -16,7 +16,7 @@ const users: UserData[] = [
     handle: "gynvael",
     bio: "security researcher/programmer. DragonSector CTF. youtube.com/@GynvaelEN",
     image: "https://avatars.githubusercontent.com/u/1008844?v=4",
-    created_at: 1689744411,
+    createdAt: 1689744411,
   },
   {
     username: "John Hammond",
@@ -24,7 +24,7 @@ const users: UserData[] = [
     bio: "Hacker. Friend. Cybersecurity Researcher",
     image:
       "https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj",
-    created_at: 1689744411,
+    createdAt: 1689744411,
   },
   {
     username: "Yaron (Ron) Minsky",
@@ -32,7 +32,7 @@ const users: UserData[] = [
     bio: "Occasional OCaml programmer. Host of @signalsthreads",
     image:
       "https://pbs.twimg.com/profile_images/1005815547475488769/qprnh4KJ_400x400.jpg",
-    created_at: 1689744411,
+    createdAt: 1689744411,
   },
   {
     username: "DevSecCon",
@@ -40,7 +40,7 @@ const users: UserData[] = [
     bio: "Community for developers, operators & security people to share their views & practices on DevSecOps",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6abQ9sZKXbGOcHVa5jDVubxnqrNibAXYdh-iXMQlu5Wro2-U8biHtVOpSjHZtvnaPSFg&usqp=CAU",
-    created_at: 1689744411,
+    createdAt: 1689744411,
   },
   {
     username: "Clint Gibler",
@@ -48,7 +48,7 @@ const users: UserData[] = [
     bio: "Head of Security Research @semgrep. Creator of tldrsec.com newsletter",
     image:
       "https://pbs.twimg.com/profile_images/860562378441740288/MgPA8UqM_400x400.jpg",
-    created_at: 1689744411,
+    createdAt: 1689744411,
   },
 ];
 

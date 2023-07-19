@@ -187,11 +187,35 @@ function unfollowUser(req: Request, res: Response) {
 }
 
 function getFollowing(req: Request, res: Response) {
-  res.send(`Get users that the user ${req.params.userId} follows`);
+  Follow.query("follower")
+    .eq(req.params.userId)
+    .exec()
+    .then((follows) => {
+      if (follows.length > 0) {
+        let followers = follows.map((follow) => follow.followed);
+        User.batchGet(followers).then((users) => {
+          res.send(users);
+        });
+      } else {
+        res.send([]);
+      }
+    });
 }
 
 function getFollowers(req: Request, res: Response) {
-  res.send(`Get users that follow the user ${req.params.userId}`);
+  Follow.query("followed")
+    .eq(req.params.userId)
+    .exec()
+    .then((follows) => {
+      if (follows.length > 0) {
+        let followers = follows.map((follow) => follow.follower);
+        User.batchGet(followers).then((users) => {
+          res.send(users);
+        });
+      } else {
+        res.send([]);
+      }
+    });
 }
 
 export {

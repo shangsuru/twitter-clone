@@ -3,7 +3,7 @@ import dynamoose from "dynamoose";
 const FollowSchema = new dynamoose.Schema({
   follower: {
     type: String,
-    rangeKey: true,
+    index: true,
   },
   followed: {
     type: String,

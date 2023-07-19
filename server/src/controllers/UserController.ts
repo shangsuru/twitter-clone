@@ -11,16 +11,50 @@ function getUser(req: Request, res: Response) {
     return;
   }
 
-  User.query("handle")
-    .eq(userId)
-    .exec()
-    .then((users) => {
-      if (users.length > 0) {
-        res.send(users[0]);
-      } else {
-        res.status(404).send({ message: "User not found" });
-      }
-    });
+  let authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+
+      User.query("handle")
+        .eq(userId)
+        .exec()
+        .then((users) => {
+          if (users.length > 0) {
+            let user = users[0];
+
+            if (handle == userId) {
+              res.send(user);
+              return;
+            }
+
+            // Check if the user (handle) is following the user (userId)
+            Follow.query("follower")
+              .eq(handle)
+              .where("followed")
+              .eq(userId)
+              .exec()
+              .then((follows) => {
+                if (follows.length > 0) {
+                  res.send({ ...user, followed: true });
+                } else {
+                  res.send({ ...user, followed: false });
+                }
+              });
+          } else {
+            res.status(404).send({ message: "User not found" });
+          }
+        });
+    }
+  });
 }
 
 function createUser(req: Request, res: Response) {

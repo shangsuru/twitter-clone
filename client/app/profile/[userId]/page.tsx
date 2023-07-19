@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { Divider, Typography, Image } from "antd";
+import { Divider, Typography, Image, Button } from "antd";
 import {
   EnvironmentOutlined,
   LinkOutlined,
@@ -33,6 +33,7 @@ type UserData = {
   bio?: string;
   location?: string;
   website?: string;
+  followed?: boolean;
 };
 
 const ownTweets: TweetData[] = [
@@ -64,6 +65,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
   const [website, setWebsite] = useState("");
   const [image, setImage] = useState("/user_icon.png");
   const [createdAt, setCreatedAt] = useState(0);
+  const [followed, setFollowed] = useState(false);
 
   const { data, status } = useSession({
     required: true,
@@ -79,9 +81,14 @@ export default function Profile({ params }: { params: { userId: string } }) {
   const ownHandle = data?.user?.email!.split("@")[0];
   const ownImage = data?.user?.image ?? "/user_icon.png";
 
-  fetch(`http://localhost:4000/users/profile/${params.userId}`).then((res) => {
+  fetch(`http://localhost:4000/users/profile/${params.userId}`, {
+    headers: {
+      Authorization: `Bearer ${data.token}`,
+    },
+  }).then((res) => {
     if (res.ok) {
       res.json().then((data: UserData) => {
+        console.log(data);
         setUsername(data.username);
         setImage(data.image);
         setHandle(data.handle);
@@ -89,6 +96,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
         if (data.location) setLocation(data.location);
         if (data.website) setWebsite(data.website);
         setCreatedAt(data.createdAt);
+        if (data.followed) setFollowed(data.followed);
       });
     }
   });
@@ -157,6 +165,15 @@ export default function Profile({ params }: { params: { userId: string } }) {
                 setWebsite(newWebsite);
               }}
             />
+          )}
+          {params.userId != ownHandle && (
+            <Button
+              style={{ marginTop: 10 }}
+              shape="round"
+              onClick={() => setFollowed(!followed)}
+            >
+              {followed ? "Unfollow" : "Follow"}
+            </Button>
           )}
         </div>
       </div>

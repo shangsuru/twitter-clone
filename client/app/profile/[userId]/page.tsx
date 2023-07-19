@@ -41,7 +41,7 @@ type UserData = {
 const ownTweets: TweetData[] = [
   {
     sender: "John Hammond",
-    handle: "@_JohnHammond",
+    handle: "_JohnHammond",
     text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
     createdAt: 1689315000,
   },

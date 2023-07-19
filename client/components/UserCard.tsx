@@ -10,7 +10,7 @@ interface UserCardProps {
 
 export default function UserCard({ username, handle, bio }: UserCardProps) {
   return (
-    <Link href="/profile" className="no-style-link">
+    <Link href={`/profile/${handle}`} className="no-style-link">
       <Card className="card">
         <Card.Meta
           avatar={
@@ -20,7 +20,7 @@ export default function UserCard({ username, handle, bio }: UserCardProps) {
             <div>
               {username}
               <br />
-              <span className="lighter-grey">{handle}</span>
+              <span className="lighter-grey">@{handle}</span>
             </div>
           }
           description={<div className="black">{bio}</div>}

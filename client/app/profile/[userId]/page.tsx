@@ -78,6 +78,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
   }
 
   const ownHandle = data?.user?.email!.split("@")[0];
+  const ownImage = data?.user?.image ?? "/user_icon.png";
 
   fetch(`http://localhost:4000/users/profile/${params.userId}`).then((res) => {
     if (res.ok) {
@@ -95,7 +96,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
 
   return (
     <AntdStyle>
-      <Header handle={ownHandle!} image={image} />
+      <Header handle={ownHandle!} image={ownImage} />
       <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>

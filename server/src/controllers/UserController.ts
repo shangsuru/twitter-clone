@@ -123,7 +123,33 @@ function followUser(req: Request, res: Response) {
 }
 
 function unfollowUser(req: Request, res: Response) {
-  res.send(`Unfollow the user ${req.params.userId}`);
+  const { userId } = req.body;
+  if (!userId) {
+    res.status(400).send({ message: "Bad Request" });
+    return;
+  }
+
+  let authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+
+      Follow.delete({
+        follower: handle,
+        followed: userId,
+      }).then(() => {
+        res.send("Unfollowed user");
+      });
+    }
+  });
 }
 
 function getFollowing(req: Request, res: Response) {

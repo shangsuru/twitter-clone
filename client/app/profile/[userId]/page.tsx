@@ -57,7 +57,6 @@ function renderTweets(tweets: TweetData[]) {
 }
 
 export default function Profile({ params }: { params: { userId: string } }) {
-  console.log(params);
   const [username, setUsername] = useState("");
   const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");

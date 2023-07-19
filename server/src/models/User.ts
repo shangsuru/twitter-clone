@@ -9,6 +9,7 @@ const UserSchema = new dynamoose.Schema({
     type: String,
     required: true,
   },
+  image: String,
   bio: String,
   location: String,
   website: String,

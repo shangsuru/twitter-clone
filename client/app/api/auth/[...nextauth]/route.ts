@@ -30,6 +30,7 @@ const authOptions: NextAuthOptions = {
         body: JSON.stringify({
           handle: handle,
           username: user?.name,
+          image: user?.image,
         }),
       });
       return true;

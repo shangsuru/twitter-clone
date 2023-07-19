@@ -23,9 +23,9 @@ function getUser(req: Request, res: Response) {
 }
 
 function createUser(req: Request, res: Response) {
-  const { handle, username } = req.body;
+  const { handle, username, image } = req.body;
 
-  if (!handle || !username) {
+  if (!handle || !username || !image) {
     res.status(400).send({ message: "Bad Request" });
     return;
   }
@@ -40,6 +40,7 @@ function createUser(req: Request, res: Response) {
         const newUser = new User({
           handle: handle,
           username: username,
+          image: image,
         });
         newUser.save().then((user) => {
           res.send(user);

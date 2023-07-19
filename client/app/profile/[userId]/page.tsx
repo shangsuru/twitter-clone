@@ -138,9 +138,9 @@ export default function Profile({ params }: { params: { userId: string } }) {
           <Image id="profile-image" preview={false} src={image} />
           <br />
 
-          {username && (
+          {params.userId == ownHandle && username && (
             <EditProfileModal
-              image={image}
+              image={ownImage}
               username={username}
               bio={bio}
               location={location}

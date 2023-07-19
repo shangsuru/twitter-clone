@@ -34,6 +34,8 @@ type UserData = {
   location?: string;
   website?: string;
   followed?: boolean;
+  following?: number;
+  followers?: number;
 };
 
 const ownTweets: TweetData[] = [
@@ -66,6 +68,8 @@ export default function Profile({ params }: { params: { userId: string } }) {
   const [image, setImage] = useState("/user_icon.png");
   const [createdAt, setCreatedAt] = useState(0);
   const [followed, setFollowed] = useState(false);
+  const [following, setFollowing] = useState(0);
+  const [followers, setFollowers] = useState(0);
 
   const { data, status } = useSession({
     required: true,
@@ -97,6 +101,8 @@ export default function Profile({ params }: { params: { userId: string } }) {
         if (data.website) setWebsite(data.website);
         setCreatedAt(data.createdAt);
         if (data.followed) setFollowed(data.followed);
+        setFollowing(data.following!);
+        setFollowers(data.followers!);
       });
     }
   });
@@ -131,12 +137,15 @@ export default function Profile({ params }: { params: { userId: string } }) {
           </p>
 
           <div>
-            <Link href="/follow" className="no-style-link lighter-grey">
+            <Link
+              href={`/follow/${handle}`}
+              className="no-style-link lighter-grey"
+            >
               <span>
-                <Text strong>{0}</Text> Following
+                <Text strong>{following}</Text> Following
               </span>{" "}
               <span>
-                <Text strong>{0}</Text> Followers
+                <Text strong>{followers}</Text> Followers
               </span>
             </Link>
           </div>

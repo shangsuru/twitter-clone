@@ -3,7 +3,7 @@ import User from "../models/User";
 import Follow from "../models/Follow";
 import jwt from "jsonwebtoken";
 
-function getUser(req: Request, res: Response) {
+async function getUser(req: Request, res: Response) {
   const { userId } = req.params;
 
   if (!userId) {
@@ -18,41 +18,56 @@ function getUser(req: Request, res: Response) {
   }
   const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+  jwt.verify(token, process.env.JWT_SECRET!, async (err, verifiedJwt) => {
     if (err) {
       res.send(err.message);
     } else {
       const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
 
-      User.query("handle")
-        .eq(userId)
-        .exec()
-        .then((users) => {
-          if (users.length > 0) {
-            let user = users[0];
+      let users = await User.query("handle").eq(userId).exec();
 
-            if (handle == userId) {
-              res.send(user);
-              return;
-            }
+      if (users.length > 0) {
+        let user = users[0];
 
-            // Check if the user (handle) is following the user (userId)
-            Follow.query("follower")
-              .eq(handle)
-              .where("followed")
-              .eq(userId)
-              .exec()
-              .then((follows) => {
-                if (follows.length > 0) {
-                  res.send({ ...user, followed: true });
-                } else {
-                  res.send({ ...user, followed: false });
-                }
-              });
-          } else {
-            res.status(404).send({ message: "User not found" });
-          }
-        });
+        let followersCount = (await Follow.query("followed").eq(userId).exec())
+          .length;
+        let followingCount = (await Follow.query("follower").eq(userId).exec())
+          .length;
+
+        if (handle == userId) {
+          res.send({
+            ...user,
+            followers: followersCount,
+            following: followingCount,
+          });
+          return;
+        }
+
+        // Check if the user (handle) is following the user (userId)
+        let follow = await Follow.query("follower")
+          .eq(handle)
+          .where("followed")
+          .eq(userId)
+          .exec();
+
+        if (follow.length > 0) {
+          res.send({
+            ...user,
+            followed: true,
+            followers: followersCount,
+            following: followingCount,
+          });
+        } else {
+          res.send({
+            ...user,
+            followed: false,
+            followers: followersCount,
+            following: followingCount,
+          });
+        }
+      } else {
+        res.status(404).send({ message: "User not found" });
+      }
     }
   });
 }

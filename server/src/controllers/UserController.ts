@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import Follow from "../models/Follow";
 import jwt from "jsonwebtoken";
 
 function getUser(req: Request, res: Response) {
@@ -91,7 +92,34 @@ function updateUser(req: Request, res: Response) {
 }
 
 function followUser(req: Request, res: Response) {
-  res.send(`Follow the user ${req.params.userId}`);
+  const { userId } = req.body;
+  if (!userId) {
+    res.status(400).send({ message: "Bad Request" });
+    return;
+  }
+
+  let authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+
+      const newFollower = new Follow({
+        follower: handle,
+        followed: userId,
+      });
+      newFollower.save().then((follow) => {
+        res.send(follow);
+      });
+    }
+  });
 }
 
 function unfollowUser(req: Request, res: Response) {

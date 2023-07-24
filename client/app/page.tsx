@@ -115,7 +115,7 @@ export default function Feed() {
 
   return (
     <AntdStyle>
-      <Header image={image} handle={handle} />
+      <Header image={image} handle={handle} JWT={data.token} />
       <Tabs defaultActiveKey="1" items={items} />
     </AntdStyle>
   );

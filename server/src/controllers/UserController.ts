@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import Follow from "../models/Follow";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import Tweet from "../models/Tweet";
+import jwt from "jsonwebtoken";
 
 async function getUser(req: Request, res: Response) {
   const { userId } = req.params;
@@ -26,54 +27,58 @@ async function getUser(req: Request, res: Response) {
         res.send(401).send({ message: "Unauthorized" });
         return;
       }
-
       const handle = verifiedJwt.id.split("@")[0];
 
+      // Get user info
       const users = await User.query("handle").eq(userId).exec();
-
-      if (users.length > 0) {
-        const user = users[0];
-
-        const followersCount = (
-          await Follow.query("followed").eq(userId).exec()
-        ).length;
-        const followingCount = (
-          await Follow.query("follower").eq(userId).exec()
-        ).length;
-
-        if (handle == userId) {
-          res.send({
-            ...user,
-            followers: followersCount,
-            following: followingCount,
-          });
-          return;
-        }
-
-        // Check if the user (handle) is following the user (userId)
-        const follow = await Follow.query("follower")
-          .eq(handle)
-          .where("followed")
-          .eq(userId)
-          .exec();
-
-        if (follow.length > 0) {
-          res.send({
-            ...user,
-            followed: true,
-            followers: followersCount,
-            following: followingCount,
-          });
-        } else {
-          res.send({
-            ...user,
-            followed: false,
-            followers: followersCount,
-            following: followingCount,
-          });
-        }
-      } else {
+      if (users.length == 0) {
         res.status(404).send({ message: "User not found" });
+        return;
+      }
+      const user = users[0];
+
+      // Get the tweets of the user
+      const tweets = await Tweet.query("sender").eq(userId).exec();
+
+      // Compute the number of followers and following
+      const followersCount = (await Follow.query("followed").eq(userId).exec())
+        .length;
+      const followingCount = (await Follow.query("follower").eq(userId).exec())
+        .length;
+
+      if (handle == userId) {
+        res.send({
+          ...user,
+          tweets: tweets,
+          followers: followersCount,
+          following: followingCount,
+        });
+        return;
+      }
+
+      // Check if the user (handle) is following the user (userId)
+      const follow = await Follow.query("follower")
+        .eq(handle)
+        .where("followed")
+        .eq(userId)
+        .exec();
+
+      if (follow.length > 0) {
+        res.send({
+          ...user,
+          tweets: tweets,
+          followed: true,
+          followers: followersCount,
+          following: followingCount,
+        });
+      } else {
+        res.send({
+          ...user,
+          tweets: tweets,
+          followed: false,
+          followers: followersCount,
+          following: followingCount,
+        });
       }
     }
   });

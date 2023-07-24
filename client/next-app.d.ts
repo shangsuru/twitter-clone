@@ -35,6 +35,7 @@ declare global {
   interface LoginDataProps {
     image: string;
     handle: string;
+    JWT?: string;
   }
 }
 

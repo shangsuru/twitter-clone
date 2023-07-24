@@ -8,6 +8,7 @@ interface TweetCardProps {
   handle: string;
   text: string;
   createdAt: number;
+  image: string;
   key: React.Key;
 }
 
@@ -16,17 +17,13 @@ export default function TweetCard({
   handle,
   text,
   createdAt,
+  image,
 }: TweetCardProps) {
   return (
     <Link href={`/profile/${handle}`} className="no-style-link">
-      <Card className="card">
+      <Card className="card" style={{ margin: 10 }}>
         <Card.Meta
-          avatar={
-            <Avatar
-              src="https://xsgames.co/randomusers/avatar.php?g=pixel"
-              alt="Avatar"
-            />
-          }
+          avatar={<Avatar src={image} alt="Avatar" />}
           title={
             <div>
               {sender}

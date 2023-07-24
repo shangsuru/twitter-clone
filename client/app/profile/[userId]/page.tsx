@@ -19,6 +19,7 @@ import { AntdStyle } from "../../AntdStyle";
 const { Title, Text } = Typography;
 
 type TweetData = {
+  id: string;
   sender: string;
   handle: string;
   text: string;
@@ -36,28 +37,8 @@ type UserData = {
   followed?: boolean;
   following?: number;
   followers?: number;
+  tweets?: TweetData[];
 };
-
-const ownTweets: TweetData[] = [
-  {
-    sender: "John Hammond",
-    handle: "_JohnHammond",
-    text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
-    createdAt: 1689315000,
-  },
-];
-
-function renderTweets(tweets: TweetData[]) {
-  return tweets.map((tweet) => (
-    <TweetCard
-      key={tweet.handle}
-      sender={tweet.sender}
-      handle={tweet.handle}
-      text={tweet.text}
-      createdAt={tweet.createdAt}
-    />
-  ));
-}
 
 export default function Profile({ params }: { params: { userId: string } }) {
   const [username, setUsername] = useState("");
@@ -70,6 +51,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
   const [followed, setFollowed] = useState(false);
   const [following, setFollowing] = useState(0);
   const [followers, setFollowers] = useState(0);
+  const [ownTweets, setOwnTweets] = useState<TweetData[]>([]);
 
   const { data, status } = useSession({
     required: true,
@@ -96,6 +78,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
           if (data.followed) setFollowed(data.followed);
           setFollowing(data.following!);
           setFollowers(data.followers!);
+          setOwnTweets(data.tweets ?? []);
         });
       } else {
         signOut();
@@ -118,7 +101,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
 
   return (
     <AntdStyle>
-      <Header handle={ownHandle} image={ownImage} />
+      <Header handle={ownHandle} image={ownImage} JWT={data.token} />
       <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>
@@ -195,7 +178,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
               shape="round"
               onClick={() => {
                 if (followed) {
-                  fetch(`http://localhost:4000/users/unfollow`, {
+                  fetch(`${process.env.PUBLIC_API_URL}/users/unfollow`, {
                     method: "DELETE",
                     headers: {
                       "Content-Type": "application/json",
@@ -211,7 +194,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
                     }
                   });
                 } else {
-                  fetch(`http://localhost:4000/users/follow`, {
+                  fetch(`${process.env.PUBLIC_API_URL}/users/follow`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
@@ -236,7 +219,18 @@ export default function Profile({ params }: { params: { userId: string } }) {
       </div>
       <Divider />
       <Title level={5}>Your Tweets</Title>
-      <div style={{ marginTop: 20 }}>{renderTweets(ownTweets)}</div>
+      <div style={{ marginTop: 20 }}>
+        {ownTweets.map((tweet) => (
+          <TweetCard
+            key={tweet.id}
+            sender={username}
+            handle={handle}
+            image={image}
+            text={tweet.text}
+            createdAt={tweet.createdAt}
+          />
+        ))}
+      </div>
     </AntdStyle>
   );
 }

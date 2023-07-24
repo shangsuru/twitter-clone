@@ -18,7 +18,7 @@ async function getUser(req: Request, res: Response) {
   }
   const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET!, async (err, verifiedJwt) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (err, verifiedJwt) => {
     if (err) {
       res.send(err.message);
     } else {
@@ -166,7 +166,7 @@ function followUser(req: Request, res: Response) {
   }
   const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, verifiedJwt) => {
     if (err) {
       res.send(err.message);
     } else {
@@ -202,7 +202,7 @@ function unfollowUser(req: Request, res: Response) {
   }
   const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, verifiedJwt) => {
     if (err) {
       res.send(err.message);
     } else {

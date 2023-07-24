@@ -5,20 +5,3 @@ services:
     command: -jar DynamoDBLocal.jar -sharedDb -dbPath .
     ports:
       - "8000:8000"
-
-  awscli:
-    build:
-      context: .
-      dockerfile: Dockerfile-awscli
-    entrypoint: [""]
-    tty: true
-    command:
-      - /bin/sh
-    volumes:
-      - ./bin:/usr/app
-
-volumes:
-  dynamodb:
-    driver: local
-  bin:
-    driver: local

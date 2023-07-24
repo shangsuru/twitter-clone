@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import Follow from "../models/Follow";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-function getUser(req: Request, res: Response) {
+async function getUser(req: Request, res: Response) {
   const { userId } = req.params;
 
   if (!userId) {
@@ -10,16 +11,72 @@ function getUser(req: Request, res: Response) {
     return;
   }
 
-  User.query("handle")
-    .eq(userId)
-    .exec()
-    .then((users) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
+
+      const users = await User.query("handle").eq(userId).exec();
+
       if (users.length > 0) {
-        res.send(users[0]);
+        const user = users[0];
+
+        const followersCount = (
+          await Follow.query("followed").eq(userId).exec()
+        ).length;
+        const followingCount = (
+          await Follow.query("follower").eq(userId).exec()
+        ).length;
+
+        if (handle == userId) {
+          res.send({
+            ...user,
+            followers: followersCount,
+            following: followingCount,
+          });
+          return;
+        }
+
+        // Check if the user (handle) is following the user (userId)
+        const follow = await Follow.query("follower")
+          .eq(handle)
+          .where("followed")
+          .eq(userId)
+          .exec();
+
+        if (follow.length > 0) {
+          res.send({
+            ...user,
+            followed: true,
+            followers: followersCount,
+            following: followingCount,
+          });
+        } else {
+          res.send({
+            ...user,
+            followed: false,
+            followers: followersCount,
+            following: followingCount,
+          });
+        }
       } else {
         res.status(404).send({ message: "User not found" });
       }
-    });
+    }
+  });
 }
 
 function createUser(req: Request, res: Response) {
@@ -56,7 +113,7 @@ function updateUser(req: Request, res: Response) {
     return;
   }
 
-  let authorization = req.headers.authorization;
+  const authorization = req.headers.authorization;
   if (!authorization) {
     res.status(401).send({ message: "Unauthorized" });
     return;
@@ -67,12 +124,11 @@ function updateUser(req: Request, res: Response) {
     if (err) {
       res.send(err.message);
     } else {
-      if (!verifiedJwt || typeof verifiedJwt == "string") {
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
         res.send(401).send({ message: "Unauthorized" });
         return;
       }
 
-      verifiedJwt = verifiedJwt;
       const handle = verifiedJwt.id.split("@")[0];
 
       User.query("handle")
@@ -82,7 +138,7 @@ function updateUser(req: Request, res: Response) {
           if (users.length == 0) {
             res.status(505).send({ message: "Internal Server Error" });
           } else {
-            let user = users[0];
+            const user = users[0];
             user.username = username;
             user.bio = bio;
             user.location = location;
@@ -97,19 +153,106 @@ function updateUser(req: Request, res: Response) {
 }
 
 function followUser(req: Request, res: Response) {
-  res.send(`Follow the user ${req.params.userId}`);
+  const { userId } = req.body;
+  if (!userId) {
+    res.status(400).send({ message: "Bad Request" });
+    return;
+  }
+
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
+
+      const newFollower = new Follow({
+        follower: handle,
+        followed: userId,
+      });
+      newFollower.save().then((follow) => {
+        res.send(follow);
+      });
+    }
+  });
 }
 
 function unfollowUser(req: Request, res: Response) {
-  res.send(`Unfollow the user ${req.params.userId}`);
+  const { userId } = req.body;
+  if (!userId) {
+    res.status(400).send({ message: "Bad Request" });
+    return;
+  }
+
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
+
+      Follow.delete({
+        follower: handle,
+        followed: userId,
+      }).then(() => {
+        res.send("Unfollowed user");
+      });
+    }
+  });
 }
 
 function getFollowing(req: Request, res: Response) {
-  res.send(`Get users that the user ${req.params.userId} follows`);
+  Follow.query("follower")
+    .eq(req.params.userId)
+    .exec()
+    .then((follows) => {
+      if (follows.length > 0) {
+        const followers = follows.map((follow) => follow.followed);
+        User.batchGet(followers).then((users) => {
+          res.send(users);
+        });
+      } else {
+        res.send([]);
+      }
+    });
 }
 
 function getFollowers(req: Request, res: Response) {
-  res.send(`Get users that follow the user ${req.params.userId}`);
+  Follow.query("followed")
+    .eq(req.params.userId)
+    .exec()
+    .then((follows) => {
+      if (follows.length > 0) {
+        const followers = follows.map((follow) => follow.follower);
+        User.batchGet(followers).then((users) => {
+          res.send(users);
+        });
+      } else {
+        res.send([]);
+      }
+    });
 }
 
 export {

@@ -29,7 +29,12 @@ export default function TweetModal({ image, handle }: LoginDataProps) {
 
   return (
     <>
-      <Button type="primary" shape="round" onClick={showModal}>
+      <Button
+        style={{ marginLeft: 5 }}
+        type="primary"
+        shape="round"
+        onClick={showModal}
+      >
         Tweet
       </Button>{" "}
       <Modal

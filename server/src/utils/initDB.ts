@@ -55,8 +55,6 @@ const users: UserData[] = [
 export default function addDummyData() {
   users.forEach((user) => {
     const newUser = new User(user);
-    newUser.save().then((user) => {
-      console.log(user);
-    });
+    newUser.save();
   });
 }

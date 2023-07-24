@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { Divider, Typography, Image } from "antd";
+import { Divider, Typography, Image, Button } from "antd";
 import {
   EnvironmentOutlined,
   LinkOutlined,
@@ -33,12 +33,15 @@ type UserData = {
   bio?: string;
   location?: string;
   website?: string;
+  followed?: boolean;
+  following?: number;
+  followers?: number;
 };
 
 const ownTweets: TweetData[] = [
   {
     sender: "John Hammond",
-    handle: "@_JohnHammond",
+    handle: "_JohnHammond",
     text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
     createdAt: 1689315000,
   },
@@ -64,6 +67,9 @@ export default function Profile({ params }: { params: { userId: string } }) {
   const [website, setWebsite] = useState("");
   const [image, setImage] = useState("/user_icon.png");
   const [createdAt, setCreatedAt] = useState(0);
+  const [followed, setFollowed] = useState(false);
+  const [following, setFollowing] = useState(0);
+  const [followers, setFollowers] = useState(0);
 
   const { data, status } = useSession({
     required: true,
@@ -73,25 +79,30 @@ export default function Profile({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
-    fetch(`${process.env.PUBLIC_API_URL}/users/profile/${params.userId}`).then(
-      (res) => {
-        if (res.ok) {
-          res.json().then((data: UserData) => {
-            setUsername(data.username);
-            setImage(data.image);
-            setHandle(data.handle);
-            if (data.bio) setBio(data.bio);
-            if (data.location) setLocation(data.location);
-            if (data.website) setWebsite(data.website);
-            setCreatedAt(data.createdAt);
-          });
-        } else {
-          signOut();
-          redirect("/login");
-        }
+    fetch(`${process.env.PUBLIC_API_URL}/users/profile/${params.userId}`, {
+      headers: {
+        Authorization: `Bearer ${data?.token}`,
+      },
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((data: UserData) => {
+          setUsername(data.username);
+          setImage(data.image);
+          setHandle(data.handle);
+          if (data.bio) setBio(data.bio);
+          if (data.location) setLocation(data.location);
+          if (data.website) setWebsite(data.website);
+          setCreatedAt(data.createdAt);
+          if (data.followed) setFollowed(data.followed);
+          setFollowing(data.following!);
+          setFollowers(data.followers!);
+        });
+      } else {
+        signOut();
+        redirect("/login");
       }
-    );
-  }, []);
+    });
+  }, [params.userId, data?.token]);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -135,12 +146,15 @@ export default function Profile({ params }: { params: { userId: string } }) {
           </p>
 
           <div>
-            <Link href="/follow" className="no-style-link lighter-grey">
+            <Link
+              href={`/follow/${handle}`}
+              className="no-style-link lighter-grey"
+            >
               <span>
-                <Text strong>{0}</Text> Following
+                <Text strong>{following}</Text> Following
               </span>{" "}
               <span>
-                <Text strong>{0}</Text> Followers
+                <Text strong>{followers}</Text> Followers
               </span>
             </Link>
           </div>
@@ -154,7 +168,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
           />
           <br />
 
-          {params.userId == ownHandle && username && (
+          {params.userId == ownHandle && username && data.token && (
             <EditProfileModal
               image={ownImage}
               username={username}
@@ -174,6 +188,49 @@ export default function Profile({ params }: { params: { userId: string } }) {
                 setWebsite(newWebsite);
               }}
             />
+          )}
+          {params.userId != ownHandle && (
+            <Button
+              style={{ marginTop: 10 }}
+              shape="round"
+              onClick={() => {
+                if (followed) {
+                  fetch(`http://localhost:4000/users/unfollow`, {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${data.token}`,
+                    },
+                    body: JSON.stringify({
+                      userId: params.userId,
+                    }),
+                  }).then((res) => {
+                    if (res.ok) {
+                      setFollowed(!followed);
+                      setFollowers(followers - 1);
+                    }
+                  });
+                } else {
+                  fetch(`http://localhost:4000/users/follow`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${data.token}`,
+                    },
+                    body: JSON.stringify({
+                      userId: params.userId,
+                    }),
+                  }).then((res) => {
+                    if (res.ok) {
+                      setFollowed(!followed);
+                      setFollowers(followers + 1);
+                    }
+                  });
+                }
+              }}
+            >
+              {followed ? "Unfollow" : "Follow"}
+            </Button>
           )}
         </div>
       </div>

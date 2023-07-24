@@ -18,7 +18,7 @@ export default function TweetCard({
   createdAt,
 }: TweetCardProps) {
   return (
-    <Link href="/profile" className="no-style-link">
+    <Link href={`/profile/${handle}`} className="no-style-link">
       <Card className="card">
         <Card.Meta
           avatar={
@@ -31,7 +31,7 @@ export default function TweetCard({
             <div>
               {sender}
               <span style={{ marginLeft: 5 }} className="handle lighter-grey">
-                {handle}{" "}
+                @{handle}{" "}
               </span>
               <span style={{ float: "right" }} className="lighter-grey">
                 {timeAgo(createdAt)}

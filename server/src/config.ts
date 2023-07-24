@@ -24,7 +24,13 @@ const throwIfNot = function <T, K extends keyof T>(
   }
 };
 
-["JWT_SECRET"].forEach((v) => {
+[
+  "JWT_SECRET",
+  "FRONTEND_URL",
+  "AWS_ACCESS_KEY_ID",
+  "AWS_SECRET_ACCESS_KEY",
+  "AWS_REGION",
+].forEach((v) => {
   throwIfNot(process.env, v);
 });
 

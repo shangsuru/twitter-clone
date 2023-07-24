@@ -9,14 +9,20 @@ const app: Express = express();
 const port = 4000;
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: process.env.FRONTEND_URL }));
 
-dynamoose.aws.ddb.local("http://localhost:8000");
+if (process.env.NODE_ENV === "development") {
+  dynamoose.aws.ddb.local("http://localhost:8000");
+} else {
+  throw Error("DynamoDB not setup for production");
+}
 
 addDummyData();
 
 routes(app);
 
 app.listen(port, () => {
-  console.log(`[Server]: I am running at http://localhost:${port}`);
+  console.log(
+    `[Server]: I am running at http://localhost:${port} in ${process.env.NODE_ENV} mode`
+  );
 });

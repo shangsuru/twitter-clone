@@ -14,6 +14,7 @@ declare module "next-auth" {
 
 declare global {
   interface UserData {
+    image: string;
     username: string;
     handle: string;
     bio: string;

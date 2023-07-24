@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Divider, Typography, Image } from "antd";
 import {
@@ -77,8 +77,13 @@ export default function Profile({ params }: { params: { userId: string } }) {
     return <p>Loading...</p>;
   }
 
-  const ownHandle = data?.user?.email!.split("@")[0];
-  const ownImage = data?.user?.image ?? "/user_icon.png";
+  if (!data || !data.user || !data.user.email) {
+    signOut();
+    redirect("/login");
+  }
+
+  const ownHandle = data.user.email.split("@")[0];
+  const ownImage = data.user.image ?? "/user_icon.png";
 
   fetch(`http://localhost:4000/users/profile/${params.userId}`).then((res) => {
     if (res.ok) {

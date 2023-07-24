@@ -3,7 +3,7 @@
 import React from "react";
 import { Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 
 import UserCard from "@/components/UserCard";
@@ -84,12 +84,17 @@ export default function Follow() {
     return <p>Loading...</p>;
   }
 
-  const image = data?.user?.image ?? "/user_icon.png";
-  const handle = data?.user?.email!.split("@")[0];
+  if (!data || !data.user || !data.user.email) {
+    signOut();
+    redirect("/login");
+  }
+
+  const image = data.user.image ?? "/user_icon.png";
+  const handle = data.user.email.split("@")[0];
 
   return (
     <AntdStyle>
-      <Header image={image} handle={handle!} />
+      <Header image={image} handle={handle} />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
     </AntdStyle>
   );

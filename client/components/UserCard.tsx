@@ -5,20 +5,21 @@ interface UserCardProps {
   username: string;
   handle: string;
   bio: string;
+  image: string;
   key: React.Key;
 }
 
-export default function UserCard({ username, handle, bio }: UserCardProps) {
+export default function UserCard({
+  username,
+  handle,
+  bio,
+  image,
+}: UserCardProps) {
   return (
     <Link href={`/profile/${handle}`} className="no-style-link">
       <Card className="card">
         <Card.Meta
-          avatar={
-            <Avatar
-              src="https://xsgames.co/randomusers/avatar.php?g=pixel"
-              alt="Avatar"
-            />
-          }
+          avatar={<Avatar src={image} alt="Avatar" />}
           title={
             <div>
               {username}

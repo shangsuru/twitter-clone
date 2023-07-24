@@ -24,6 +24,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
           username={user.username}
           handle={user.handle}
           bio={user.bio}
+          image={image}
         />
       )),
     },
@@ -36,6 +37,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
           username={user.username}
           handle={user.handle}
           bio={user.bio}
+          image={user.image}
         />
       )),
     },

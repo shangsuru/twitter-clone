@@ -104,7 +104,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
 
   return (
     <AntdStyle>
-      <Header handle={ownHandle!} image={ownImage} />
+      <Header handle={ownHandle} image={ownImage} />
       <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>

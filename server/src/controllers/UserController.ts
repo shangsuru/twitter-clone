@@ -67,11 +67,11 @@ function updateUser(req: Request, res: Response) {
     if (err) {
       res.send(err.message);
     } else {
-      verifiedJwt = verifiedJwt as JwtPayload;
-      if (!verifiedJwt || !verifiedJwt.id) {
+      if (!verifiedJwt || typeof verifiedJwt == "string") {
         res.send(401).send({ message: "Unauthorized" });
       }
 
+      verifiedJwt = verifiedJwt as JwtPayload;
       const handle = verifiedJwt.id.split("@")[0];
 
       User.query("handle")

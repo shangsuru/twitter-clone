@@ -51,8 +51,8 @@ function createUser(req: Request, res: Response) {
 
 function updateUser(req: Request, res: Response) {
   const { username, bio, location, website } = req.body;
-  if (!username || !bio || !location || !website) {
-    res.status(400).send({ message: "Bad Request" });
+  if (!username) {
+    res.status(400).send({ message: "Username cannot be empty" });
     return;
   }
 

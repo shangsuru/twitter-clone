@@ -10,7 +10,7 @@ export function timeAgo(ts: UnixTime): string {
   const month = day * 30;
 
   if (seconds / month >= 1) {
-    let date = new Date(ts * 1000);
+    const date = new Date(ts * 1000);
     return `${date.getMonth()}/${date.getDay()}/${date.getFullYear()}`;
   }
 
@@ -30,6 +30,6 @@ export function timeAgo(ts: UnixTime): string {
 }
 
 export function timeToDate(ts: UnixTime): string {
-  let date = new Date(ts * 1000);
+  const date = new Date(ts * 1000);
   return `${date.getMonth()}/${date.getDay()}/${date.getFullYear()}`;
 }

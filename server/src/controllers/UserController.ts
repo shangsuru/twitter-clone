@@ -11,7 +11,7 @@ async function getUser(req: Request, res: Response) {
     return;
   }
 
-  let authorization = req.headers.authorization;
+  const authorization = req.headers.authorization;
   if (!authorization) {
     res.status(401).send({ message: "Unauthorized" });
     return;
@@ -29,15 +29,17 @@ async function getUser(req: Request, res: Response) {
 
       const handle = verifiedJwt.id.split("@")[0];
 
-      let users = await User.query("handle").eq(userId).exec();
+      const users = await User.query("handle").eq(userId).exec();
 
       if (users.length > 0) {
-        let user = users[0];
+        const user = users[0];
 
-        let followersCount = (await Follow.query("followed").eq(userId).exec())
-          .length;
-        let followingCount = (await Follow.query("follower").eq(userId).exec())
-          .length;
+        const followersCount = (
+          await Follow.query("followed").eq(userId).exec()
+        ).length;
+        const followingCount = (
+          await Follow.query("follower").eq(userId).exec()
+        ).length;
 
         if (handle == userId) {
           res.send({
@@ -49,7 +51,7 @@ async function getUser(req: Request, res: Response) {
         }
 
         // Check if the user (handle) is following the user (userId)
-        let follow = await Follow.query("follower")
+        const follow = await Follow.query("follower")
           .eq(handle)
           .where("followed")
           .eq(userId)
@@ -111,7 +113,7 @@ function updateUser(req: Request, res: Response) {
     return;
   }
 
-  let authorization = req.headers.authorization;
+  const authorization = req.headers.authorization;
   if (!authorization) {
     res.status(401).send({ message: "Unauthorized" });
     return;
@@ -136,7 +138,7 @@ function updateUser(req: Request, res: Response) {
           if (users.length == 0) {
             res.status(505).send({ message: "Internal Server Error" });
           } else {
-            let user = users[0];
+            const user = users[0];
             user.username = username;
             user.bio = bio;
             user.location = location;
@@ -157,7 +159,7 @@ function followUser(req: Request, res: Response) {
     return;
   }
 
-  let authorization = req.headers.authorization;
+  const authorization = req.headers.authorization;
   if (!authorization) {
     res.status(401).send({ message: "Unauthorized" });
     return;
@@ -193,7 +195,7 @@ function unfollowUser(req: Request, res: Response) {
     return;
   }
 
-  let authorization = req.headers.authorization;
+  const authorization = req.headers.authorization;
   if (!authorization) {
     res.status(401).send({ message: "Unauthorized" });
     return;
@@ -227,7 +229,7 @@ function getFollowing(req: Request, res: Response) {
     .exec()
     .then((follows) => {
       if (follows.length > 0) {
-        let followers = follows.map((follow) => follow.followed);
+        const followers = follows.map((follow) => follow.followed);
         User.batchGet(followers).then((users) => {
           res.send(users);
         });
@@ -243,7 +245,7 @@ function getFollowers(req: Request, res: Response) {
     .exec()
     .then((follows) => {
       if (follows.length > 0) {
-        let followers = follows.map((follow) => follow.follower);
+        const followers = follows.map((follow) => follow.follower);
         User.batchGet(followers).then((users) => {
           res.send(users);
         });

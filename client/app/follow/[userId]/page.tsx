@@ -84,7 +84,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
 
   return (
     <AntdStyle>
-      <Header image={image} handle={handle!} />
+      <Header image={image} handle={handle} />
       <Tabs defaultActiveKey="1" items={items} />
     </AntdStyle>
   );

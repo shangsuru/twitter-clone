@@ -168,7 +168,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
           />
           <br />
 
-          {params.userId == ownHandle && username && (
+          {params.userId == ownHandle && username && data.token && (
             <EditProfileModal
               image={ownImage}
               username={username}
@@ -207,6 +207,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
                   }).then((res) => {
                     if (res.ok) {
                       setFollowed(!followed);
+                      setFollowers(followers - 1);
                     }
                   });
                 } else {
@@ -222,6 +223,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
                   }).then((res) => {
                     if (res.ok) {
                       setFollowed(!followed);
+                      setFollowers(followers + 1);
                     }
                   });
                 }

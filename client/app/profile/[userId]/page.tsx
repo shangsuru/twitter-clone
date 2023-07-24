@@ -81,7 +81,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
   useEffect(() => {
     fetch(`${process.env.PUBLIC_API_URL}/users/profile/${params.userId}`, {
       headers: {
-        Authorization: `Bearer ${data.token}`,
+        Authorization: `Bearer ${data?.token}`,
       },
     }).then((res) => {
       if (res.ok) {

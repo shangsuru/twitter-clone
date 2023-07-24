@@ -64,10 +64,6 @@ const following: TweetData[] = [
   },
 ];
 
-function onChange(key: string) {
-  console.log(key);
-}
-
 const items: Tab[] = [
   {
     key: "1",
@@ -120,7 +116,7 @@ export default function Feed() {
   return (
     <AntdStyle>
       <Header image={image} handle={handle} />
-      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      <Tabs defaultActiveKey="1" items={items} />
     </AntdStyle>
   );
 }

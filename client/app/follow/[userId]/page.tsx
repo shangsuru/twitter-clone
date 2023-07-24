@@ -10,10 +10,6 @@ import UserCard from "@/components/UserCard";
 import Header from "@/components/Header";
 import { AntdStyle } from "../../AntdStyle";
 
-const onChange = (key: string) => {
-  console.log(key);
-};
-
 export default function Follow({ params }: { params: { userId: string } }) {
   const [followers, setFollowers] = useState<UserData[]>([]);
   const [following, setFollowing] = useState<UserData[]>([]);
@@ -60,7 +56,6 @@ export default function Follow({ params }: { params: { userId: string } }) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setFollowing(data);
       });
 
@@ -71,7 +66,6 @@ export default function Follow({ params }: { params: { userId: string } }) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setFollowers(data);
       });
   }, []);
@@ -86,7 +80,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
   return (
     <AntdStyle>
       <Header image={image} handle={handle!} />
-      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      <Tabs defaultActiveKey="1" items={items} />
     </AntdStyle>
   );
 }

@@ -26,18 +26,10 @@ export const LogoutButton = () => {
   );
 };
 
-export const ProfileButton = ({
-  image,
-}: {
-  image: string | null | undefined;
-}) => {
+export const ProfileButton = ({ image, handle }: LoginDataProps) => {
   return (
-    <Link href="/profile">
-      {image ? (
-        <Avatar src={image} className="avatar" />
-      ) : (
-        <Avatar src={"/user_icon.png"} className="avatar" />
-      )}
+    <Link href={`/profile/${handle}`}>
+      <Avatar src={image} className="avatar" alt="Avatar" />
     </Link>
   );
 };

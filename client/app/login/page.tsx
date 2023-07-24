@@ -9,9 +9,8 @@ import { AntdStyle } from "../AntdStyle";
 
 export default function Login() {
   const { data: session } = useSession();
-  const user = session?.user;
 
-  if (user) {
+  if (session && session.user) {
     redirect("/");
   }
 

@@ -6,6 +6,7 @@ import {
   unfollowUser,
   getFollowing,
   getFollowers,
+  createUser,
 } from "../controllers/UserController";
 import {
   getAllTweets,
@@ -23,4 +24,5 @@ export default function routes(app: Express) {
   app.get("/users/:userId/followers", getFollowers);
   app.get("/users/profile/:userId", getUser);
   app.patch("/users/profile", updateUser);
+  app.post("/users/profile", createUser);
 }

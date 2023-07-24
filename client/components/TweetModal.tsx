@@ -3,11 +3,7 @@ import React, { useState } from "react";
 import { Avatar, Button, Input, Modal } from "antd";
 import { ProfileButton } from "./Buttons";
 
-export default function TweetModal({
-  image,
-}: {
-  image: string | null | undefined;
-}) {
+export default function TweetModal({ image, handle }: LoginDataProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -40,7 +36,7 @@ export default function TweetModal({
         open={open}
         title={
           <div>
-            <ProfileButton image={image} />
+            <ProfileButton image={image} handle={handle} />
 
             <span>{"What's happening?"}</span>
           </div>
@@ -50,6 +46,7 @@ export default function TweetModal({
         footer={[
           <Button
             key="submit"
+            style={{ marginTop: 20 }}
             type="primary"
             loading={loading}
             onClick={handleModalOk}

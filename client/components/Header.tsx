@@ -7,11 +7,7 @@ import { usePathname } from "next/navigation";
 import TweetModal from "./TweetModal";
 import { LogoutButton, ProfileButton } from "./Buttons";
 
-export default function Header({
-  image,
-}: {
-  image: string | null | undefined;
-}) {
+export default function Header({ image, handle }: LoginDataProps) {
   return (
     <div style={{ position: "relative" }}>
       <div id="twitter-logo-container">
@@ -26,12 +22,12 @@ export default function Header({
         </Link>
       </div>
       <div id="profile-icon-tweet-button">
-        {usePathname() == "/profile" ? (
+        {usePathname() == `/profile/${handle}` ? (
           <LogoutButton />
         ) : (
           <>
-            <ProfileButton image={image} />
-            <TweetModal image={image} />
+            <ProfileButton image={image} handle={handle} />
+            <TweetModal image={image} handle={handle} />
           </>
         )}
       </div>

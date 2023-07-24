@@ -20,6 +20,24 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (!user || !user.email) {
+        return false;
+      }
+      const handle = user.email.split("@")[0];
+      await fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          handle: handle,
+          username: user.name,
+          image: user.image,
+        }),
+      });
+      return true;
+    },
     async jwt({ token, user, account }) {
       if (account) {
         const userLoggedIn = signToken(user?.email as string);

@@ -1,10 +1,6 @@
 type UnixTime = number;
 
 export function timeAgo(ts: UnixTime): string {
-  // This function computes the delta between the
-  // provided timestamp and the current time, then test
-  // the delta for predefined ranges.
-
   var now = Math.floor(Date.now() / 1000);
   var seconds = now - ts;
 
@@ -31,4 +27,9 @@ export function timeAgo(ts: UnixTime): string {
   }
 
   return "1m";
+}
+
+export function timeToDate(ts: UnixTime): string {
+  let date = new Date(ts * 1000);
+  return `${date.getMonth()}/${date.getDay()}/${date.getFullYear()}`;
 }

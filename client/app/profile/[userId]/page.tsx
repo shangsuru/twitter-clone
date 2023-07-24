@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -57,7 +57,6 @@ function renderTweets(tweets: TweetData[]) {
 }
 
 export default function Profile({ params }: { params: { userId: string } }) {
-  console.log(params);
   const [username, setUsername] = useState("");
   const [handle, setHandle] = useState("");
   const [bio, setBio] = useState("");
@@ -73,6 +72,24 @@ export default function Profile({ params }: { params: { userId: string } }) {
     },
   });
 
+  useEffect(() => {
+    fetch(`http://localhost:4000/users/profile/${params.userId}`).then(
+      (res) => {
+        if (res.ok) {
+          res.json().then((data: UserData) => {
+            setUsername(data.username);
+            setImage(data.image);
+            setHandle(data.handle);
+            if (data.bio) setBio(data.bio);
+            if (data.location) setLocation(data.location);
+            if (data.website) setWebsite(data.website);
+            setCreatedAt(data.createdAt);
+          });
+        }
+      }
+    );
+  }, []);
+
   if (status === "loading") {
     return <p>Loading...</p>;
   }
@@ -84,20 +101,6 @@ export default function Profile({ params }: { params: { userId: string } }) {
 
   const ownHandle = data.user.email.split("@")[0];
   const ownImage = data.user.image ?? "/user_icon.png";
-
-  fetch(`http://localhost:4000/users/profile/${params.userId}`).then((res) => {
-    if (res.ok) {
-      res.json().then((data: UserData) => {
-        setUsername(data.username);
-        setImage(data.image);
-        setHandle(data.handle);
-        if (data.bio) setBio(data.bio);
-        if (data.location) setLocation(data.location);
-        if (data.website) setWebsite(data.website);
-        setCreatedAt(data.createdAt);
-      });
-    }
-  });
 
   return (
     <AntdStyle>

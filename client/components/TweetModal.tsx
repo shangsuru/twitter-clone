@@ -1,8 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { Avatar, Button, Input, Modal } from "antd";
+import { ProfileButton } from "./Buttons";
 
-export default function TweetModal() {
+export default function TweetModal({
+  image,
+}: {
+  image: string | null | undefined;
+}) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -35,12 +40,9 @@ export default function TweetModal() {
         open={open}
         title={
           <div>
-            <Avatar
-              src="https://yt3.googleusercontent.com/6FqcWoHZvrZixaGi1S3Re3Z90SCS3iq2_36hQSnSHQPtQVVkywH8WKka53MiBYBSP6DmqM-g9w=s900-c-k-c0x00ffffff-no-rj"
-              className="avatar"
-            />
+            <ProfileButton image={image} />
 
-            <span>What's happening?</span>
+            <span>{"What's happening?"}</span>
           </div>
         }
         onOk={handleModalOk}

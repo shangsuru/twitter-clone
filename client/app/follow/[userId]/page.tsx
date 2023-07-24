@@ -68,7 +68,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
       .then((data) => {
         setFollowers(data);
       });
-  }, []);
+  }, [params.userId]);
 
   if (status === "loading") {
     return <p>Loading...</p>;

@@ -102,7 +102,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
         redirect("/login");
       }
     });
-  }, []);
+  }, [params.userId, data?.token]);
 
   if (status === "loading") {
     return <p>Loading...</p>;

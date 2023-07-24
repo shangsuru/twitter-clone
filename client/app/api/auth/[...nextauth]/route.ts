@@ -28,7 +28,9 @@ const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.token = token.loggedUser;
+      if (typeof token.loggedUser === "string") {
+        session.token = token.loggedUser;
+      }
       return session;
     },
   },

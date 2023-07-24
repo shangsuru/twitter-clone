@@ -69,9 +69,10 @@ function updateUser(req: Request, res: Response) {
     } else {
       if (!verifiedJwt || typeof verifiedJwt == "string") {
         res.send(401).send({ message: "Unauthorized" });
+        return;
       }
 
-      verifiedJwt = verifiedJwt as JwtPayload;
+      verifiedJwt = verifiedJwt;
       const handle = verifiedJwt.id.split("@")[0];
 
       User.query("handle")

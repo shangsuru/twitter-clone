@@ -7,7 +7,12 @@ import { GoogleOutlined } from "@ant-design/icons";
 
 export const LoginButton = () => {
   return (
-    <Button type="primary" shape="round" onClick={() => signIn()} danger>
+    <Button
+      type="primary"
+      shape="round"
+      onClick={() => signIn("google")}
+      danger
+    >
       <GoogleOutlined /> Sign in with Google
     </Button>
   );

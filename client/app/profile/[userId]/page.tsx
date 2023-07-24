@@ -222,12 +222,16 @@ export default function Profile({ params }: { params: { userId: string } }) {
       <div style={{ marginTop: 20 }}>
         {ownTweets.map((tweet) => (
           <TweetCard
+            editable={true}
             key={tweet.id}
             sender={username}
             handle={handle}
             image={image}
             text={tweet.text}
             createdAt={tweet.createdAt}
+            deleteTweet={() => {
+              setOwnTweets(ownTweets.filter((t) => t.id !== tweet.id));
+            }}
           />
         ))}
       </div>

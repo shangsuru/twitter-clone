@@ -52,6 +52,7 @@ export default function Feed() {
       label: "All",
       children: allTweets.map((tweet) => (
         <TweetCard
+          editable={false}
           key={tweet.id}
           sender={tweet.sender}
           handle={tweet.handle}
@@ -66,6 +67,7 @@ export default function Feed() {
       label: "Following",
       children: following.map((tweet) => (
         <TweetCard
+          editable={false}
           key={tweet.id}
           sender={tweet.sender}
           handle={tweet.handle}

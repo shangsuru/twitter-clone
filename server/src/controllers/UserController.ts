@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/User";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 function getUser(req: Request, res: Response) {
   const { userId } = req.params;
@@ -67,7 +67,12 @@ function updateUser(req: Request, res: Response) {
     if (err) {
       res.send(err.message);
     } else {
-      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+      verifiedJwt = verifiedJwt as JwtPayload;
+      if (!verifiedJwt || !verifiedJwt.id) {
+        res.send(401).send({ message: "Unauthorized" });
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
 
       User.query("handle")
         .eq(handle)

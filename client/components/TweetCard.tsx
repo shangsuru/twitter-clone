@@ -22,7 +22,10 @@ export default function TweetCard({
       <Card className="card">
         <Card.Meta
           avatar={
-            <Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />
+            <Avatar
+              src="https://xsgames.co/randomusers/avatar.php?g=pixel"
+              alt="Avatar"
+            />
           }
           title={
             <div>

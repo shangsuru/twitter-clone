@@ -30,7 +30,7 @@ export const ProfileButton = ({
 }) => {
   return (
     <Link href={`/profile/${handle}`}>
-      <Avatar src={image} className="avatar" />
+      <Avatar src={image} className="avatar" alt="Avatar" />
     </Link>
   );
 };

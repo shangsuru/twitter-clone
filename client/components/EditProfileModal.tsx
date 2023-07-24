@@ -70,7 +70,7 @@ export default function EditProfileModal({
         open={open}
         title={
           <div>
-            <Avatar src={image} className="avatar" />
+            <Avatar src={image} className="avatar" alt="Avatar" />
 
             <span>Edit Profile</span>
           </div>

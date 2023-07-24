@@ -2,15 +2,7 @@
 import React, { useState } from "react";
 import { Avatar, Button, Divider, Modal, Input } from "antd";
 
-export default function EditProfileModal({
-  image,
-  username,
-  bio,
-  location,
-  website,
-  JWT,
-  updateState,
-}: {
+interface EditProfileModalProps {
   image: string;
   username: string;
   bio: string | undefined;
@@ -23,7 +15,17 @@ export default function EditProfileModal({
     newLocation: string,
     newWebsite: string
   ) => void;
-}) {
+}
+
+export default function EditProfileModal({
+  image,
+  username,
+  bio,
+  location,
+  website,
+  JWT,
+  updateState,
+}: EditProfileModalProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputName, setInputName] = useState(username);

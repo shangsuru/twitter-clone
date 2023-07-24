@@ -21,13 +21,7 @@ export const LogoutButton = () => {
   );
 };
 
-export const ProfileButton = ({
-  image,
-  handle,
-}: {
-  image: string;
-  handle: string;
-}) => {
+export const ProfileButton = ({ image, handle }: LoginDataProps) => {
   return (
     <Link href={`/profile/${handle}`}>
       <Avatar src={image} className="avatar" alt="Avatar" />

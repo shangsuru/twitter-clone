@@ -3,13 +3,7 @@ import React, { useState } from "react";
 import { Avatar, Button, Input, Modal } from "antd";
 import { ProfileButton } from "./Buttons";
 
-export default function TweetModal({
-  image,
-  handle,
-}: {
-  image: string;
-  handle: string;
-}) {
+export default function TweetModal({ image, handle }: LoginDataProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 

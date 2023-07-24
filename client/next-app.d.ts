@@ -16,6 +16,11 @@ declare global {
     text: string;
     createdAt: number;
   }
+
+  interface LoginDataProps {
+    image: string;
+    handle: string;
+  }
 }
 
 export {};

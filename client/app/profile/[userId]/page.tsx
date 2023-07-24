@@ -73,7 +73,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
-    fetch(`http://localhost:4000/users/profile/${params.userId}`).then(
+    fetch(`${process.env.PUBLIC_API_URL}/users/profile/${params.userId}`).then(
       (res) => {
         if (res.ok) {
           res.json().then((data: UserData) => {
@@ -85,6 +85,9 @@ export default function Profile({ params }: { params: { userId: string } }) {
             if (data.website) setWebsite(data.website);
             setCreatedAt(data.createdAt);
           });
+        } else {
+          signOut();
+          redirect("/login");
         }
       }
     );

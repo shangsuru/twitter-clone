@@ -63,7 +63,7 @@ function updateUser(req: Request, res: Response) {
   }
   const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, verifiedJwt) => {
     if (err) {
       res.send(err.message);
     } else {

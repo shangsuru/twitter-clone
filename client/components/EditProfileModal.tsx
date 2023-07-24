@@ -40,7 +40,7 @@ export default function EditProfileModal({
   function handleModalOk() {
     setLoading(true);
     website = inputWebsite!.replace("https://", "");
-    fetch(`http://localhost:4000/users/profile`, {
+    fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -52,10 +52,12 @@ export default function EditProfileModal({
         website: website,
         location: inputLocation,
       }),
-    }).then(() => {
-      updateState(inputName, inputBio!, inputLocation!, website!);
+    }).then((res) => {
       setLoading(false);
-      setOpen(false);
+      if (res.ok) {
+        updateState(inputName, inputBio!, inputLocation!, website!);
+        setOpen(false);
+      }
     });
   }
 

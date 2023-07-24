@@ -140,7 +140,12 @@ export default function Profile({ params }: { params: { userId: string } }) {
           </div>
         </div>
         <div>
-          <Image id="profile-image" preview={false} src={image} />
+          <Image
+            id="profile-image"
+            preview={false}
+            src={image}
+            alt="Profile Image"
+          />
           <br />
 
           {params.userId == ownHandle && username && (

@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Divider, Typography, Image, Button } from "antd";
 import {
@@ -78,38 +78,47 @@ export default function Profile({ params }: { params: { userId: string } }) {
     },
   });
 
+  useEffect(() => {
+    fetch(`${process.env.PUBLIC_API_URL}/users/profile/${params.userId}`, {
+      headers: {
+        Authorization: `Bearer ${data.token}`,
+      },
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((data: UserData) => {
+          setUsername(data.username);
+          setImage(data.image);
+          setHandle(data.handle);
+          if (data.bio) setBio(data.bio);
+          if (data.location) setLocation(data.location);
+          if (data.website) setWebsite(data.website);
+          setCreatedAt(data.createdAt);
+          if (data.followed) setFollowed(data.followed);
+          setFollowing(data.following!);
+          setFollowers(data.followers!);
+        });
+      } else {
+        signOut();
+        redirect("/login");
+      }
+    });
+  }, []);
+
   if (status === "loading") {
     return <p>Loading...</p>;
   }
 
-  const ownHandle = data?.user?.email!.split("@")[0];
-  const ownImage = data?.user?.image ?? "/user_icon.png";
+  if (!data || !data.user || !data.user.email) {
+    signOut();
+    redirect("/login");
+  }
 
-  fetch(`http://localhost:4000/users/profile/${params.userId}`, {
-    headers: {
-      Authorization: `Bearer ${data.token}`,
-    },
-  }).then((res) => {
-    if (res.ok) {
-      res.json().then((data: UserData) => {
-        console.log(data);
-        setUsername(data.username);
-        setImage(data.image);
-        setHandle(data.handle);
-        if (data.bio) setBio(data.bio);
-        if (data.location) setLocation(data.location);
-        if (data.website) setWebsite(data.website);
-        setCreatedAt(data.createdAt);
-        if (data.followed) setFollowed(data.followed);
-        setFollowing(data.following!);
-        setFollowers(data.followers!);
-      });
-    }
-  });
+  const ownHandle = data.user.email.split("@")[0];
+  const ownImage = data.user.image ?? "/user_icon.png";
 
   return (
     <AntdStyle>
-      <Header handle={ownHandle!} image={ownImage} />
+      <Header handle={ownHandle} image={ownImage} />
       <div id="profile-header">
         <div>
           <Title level={3} style={{ marginBottom: 2 }}>
@@ -151,7 +160,12 @@ export default function Profile({ params }: { params: { userId: string } }) {
           </div>
         </div>
         <div>
-          <Image id="profile-image" preview={false} src={image} />
+          <Image
+            id="profile-image"
+            preview={false}
+            src={image}
+            alt="Profile Image"
+          />
           <br />
 
           {params.userId == ownHandle && username && (

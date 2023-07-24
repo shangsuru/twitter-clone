@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import Follow from "../models/Follow";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 async function getUser(req: Request, res: Response) {
   const { userId } = req.params;
@@ -22,7 +22,12 @@ async function getUser(req: Request, res: Response) {
     if (err) {
       res.send(err.message);
     } else {
-      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
 
       let users = await User.query("handle").eq(userId).exec();
 
@@ -101,8 +106,8 @@ function createUser(req: Request, res: Response) {
 
 function updateUser(req: Request, res: Response) {
   const { username, bio, location, website } = req.body;
-  if (!username || !bio || !location || !website) {
-    res.status(400).send({ message: "Bad Request" });
+  if (!username) {
+    res.status(400).send({ message: "Username cannot be empty" });
     return;
   }
 
@@ -113,11 +118,16 @@ function updateUser(req: Request, res: Response) {
   }
   const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err, verifiedJwt) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, verifiedJwt) => {
     if (err) {
       res.send(err.message);
     } else {
-      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
 
       User.query("handle")
         .eq(handle)
@@ -158,7 +168,12 @@ function followUser(req: Request, res: Response) {
     if (err) {
       res.send(err.message);
     } else {
-      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
 
       const newFollower = new Follow({
         follower: handle,
@@ -189,7 +204,12 @@ function unfollowUser(req: Request, res: Response) {
     if (err) {
       res.send(err.message);
     } else {
-      const handle = (verifiedJwt! as jwt.JwtPayload).id.split("@")[0];
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
 
       Follow.delete({
         follower: handle,

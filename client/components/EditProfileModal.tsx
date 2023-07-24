@@ -2,15 +2,7 @@
 import React, { useState } from "react";
 import { Avatar, Button, Divider, Modal, Input } from "antd";
 
-export default function EditProfileModal({
-  image,
-  username,
-  bio,
-  location,
-  website,
-  JWT,
-  updateState,
-}: {
+interface EditProfileModalProps {
   image: string;
   username: string;
   bio: string | undefined;
@@ -23,7 +15,17 @@ export default function EditProfileModal({
     newLocation: string,
     newWebsite: string
   ) => void;
-}) {
+}
+
+export default function EditProfileModal({
+  image,
+  username,
+  bio,
+  location,
+  website,
+  JWT,
+  updateState,
+}: EditProfileModalProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [inputName, setInputName] = useState(username);
@@ -38,7 +40,7 @@ export default function EditProfileModal({
   function handleModalOk() {
     setLoading(true);
     website = inputWebsite!.replace("https://", "");
-    fetch(`http://localhost:4000/users/profile`, {
+    fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -50,10 +52,12 @@ export default function EditProfileModal({
         website: website,
         location: inputLocation,
       }),
-    }).then(() => {
-      updateState(inputName, inputBio!, inputLocation!, website!);
+    }).then((res) => {
       setLoading(false);
-      setOpen(false);
+      if (res.ok) {
+        updateState(inputName, inputBio!, inputLocation!, website!);
+        setOpen(false);
+      }
     });
   }
 
@@ -70,7 +74,7 @@ export default function EditProfileModal({
         open={open}
         title={
           <div>
-            <Avatar src={image} className="avatar" />
+            <Avatar src={image} className="avatar" alt="Avatar" />
 
             <span>Edit Profile</span>
           </div>

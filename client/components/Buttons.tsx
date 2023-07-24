@@ -7,7 +7,12 @@ import { GoogleOutlined } from "@ant-design/icons";
 
 export const LoginButton = () => {
   return (
-    <Button type="primary" shape="round" onClick={() => signIn()} danger>
+    <Button
+      type="primary"
+      shape="round"
+      onClick={() => signIn("google")}
+      danger
+    >
       <GoogleOutlined /> Sign in with Google
     </Button>
   );
@@ -21,16 +26,10 @@ export const LogoutButton = () => {
   );
 };
 
-export const ProfileButton = ({
-  image,
-  handle,
-}: {
-  image: string;
-  handle: string;
-}) => {
+export const ProfileButton = ({ image, handle }: LoginDataProps) => {
   return (
     <Link href={`/profile/${handle}`}>
-      <Avatar src={image} className="avatar" />
+      <Avatar src={image} className="avatar" alt="Avatar" />
     </Link>
   );
 };

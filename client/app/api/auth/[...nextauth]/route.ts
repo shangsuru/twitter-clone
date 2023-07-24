@@ -21,7 +21,10 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      const handle = user?.email?.split("@")[0];
+      if (!user || !user.email) {
+        return false;
+      }
+      const handle = user.email.split("@")[0];
       await fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
         method: "POST",
         headers: {
@@ -29,8 +32,8 @@ const authOptions: NextAuthOptions = {
         },
         body: JSON.stringify({
           handle: handle,
-          username: user?.name,
-          image: user?.image,
+          username: user.name,
+          image: user.image,
         }),
       });
       return true;
@@ -43,7 +46,9 @@ const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.token = token.loggedUser;
+      if (typeof token.loggedUser === "string") {
+        session.token = token.loggedUser;
+      }
       return session;
     },
   },

@@ -5,7 +5,7 @@ const TweetsSchema = new dynamoose.Schema({
     type: String,
     hashKey: true,
   },
-  sender: {
+  handle: {
     type: String,
     index: true,
   },

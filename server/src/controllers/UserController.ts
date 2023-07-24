@@ -38,7 +38,7 @@ async function getUser(req: Request, res: Response) {
       const user = users[0];
 
       // Get the tweets of the user
-      const tweets = await Tweet.query("sender").eq(userId).exec();
+      const tweets = await Tweet.query("handle").eq(userId).exec();
 
       // Compute the number of followers and following
       const followersCount = (await Follow.query("followed").eq(userId).exec())

@@ -26,6 +26,8 @@ declare global {
   }
 
   interface TweetData {
+    id: string;
+    image: string;
     sender: string;
     handle: string;
     text: string;

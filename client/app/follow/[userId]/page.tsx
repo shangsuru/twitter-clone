@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
 import { signOut, useSession } from "next-auth/react";

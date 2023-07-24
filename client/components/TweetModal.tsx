@@ -1,9 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Input, Modal } from "antd";
 import { ProfileButton } from "./Buttons";
-import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 
 export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
   const [loading, setLoading] = useState(false);
@@ -29,6 +27,7 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
       setLoading(false);
       if (res.ok) {
         setOpen(false);
+        setTweet("");
       }
     });
   }

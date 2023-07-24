@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Avatar, Button, Divider, Modal, Input } from "antd";
 
 interface EditProfileModalProps {

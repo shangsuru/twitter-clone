@@ -15,6 +15,7 @@ interface TweetCardProps {
   deleteTweet?: () => void;
   JWT: string | undefined;
   tweetId: string;
+  images: string[];
   key: React.Key;
 }
 
@@ -28,6 +29,7 @@ export default function TweetCard({
   deleteTweet,
   JWT,
   tweetId,
+  images,
 }: TweetCardProps) {
   const [edit, setEdit] = useState(false);
   const [savedText, setSavedText] = useState(text);
@@ -96,6 +98,19 @@ export default function TweetCard({
             >
               <DeleteOutlined />
             </Button>
+          </div>
+        )}
+
+        {images && (
+          <div style={{ marginTop: 10 }}>
+            {images.map((image) => (
+              <img
+                key={image}
+                src={image}
+                alt="Tweet Image"
+                style={{ width: "100%", height: "auto" }}
+              />
+            ))}
           </div>
         )}
       </Card>

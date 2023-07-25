@@ -230,6 +230,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
             image={image}
             text={tweet.text}
             createdAt={tweet.createdAt}
+            images={tweet.images}
             JWT={data.token}
             deleteTweet={() => {
               setOwnTweets(ownTweets.filter((t) => t.id !== tweet.id));

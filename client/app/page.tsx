@@ -59,6 +59,7 @@ export default function Feed() {
           text={tweet.text}
           image={tweet.image}
           createdAt={tweet.createdAt}
+          images={tweet.images}
         />
       )),
     },
@@ -74,6 +75,7 @@ export default function Feed() {
           text={tweet.text}
           image={tweet.image}
           createdAt={tweet.createdAt}
+          images={tweet.images}
         />
       )),
     },

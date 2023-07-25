@@ -32,6 +32,7 @@ declare global {
     handle: string;
     text: string;
     createdAt: number;
+    images: string[];
   }
 
   interface LoginDataProps {

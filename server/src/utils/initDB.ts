@@ -16,6 +16,7 @@ interface TweetData {
   handle: string;
   text: string;
   createdAt: number;
+  images: string;
 }
 
 const users: UserData[] = [
@@ -66,30 +67,35 @@ const tweets: TweetData[] = [
     handle: "gynvael",
     text: "Friday was my last day at Google. I'm saddened to leave behind my team of last 12+ years, but I know Google Security is in great hands.  It's time for a short break and then I'm moving on with plans I've made long ago - my own sec research, consulting, and education company.",
     createdAt: 1689317981,
+    images: "",
   },
   {
     id: "2",
     handle: "_JohnHammond",
     text: "For another fireworks show, Ignacio Dominguez and Carlos Polop from HALBORN showcase how dependency confusion attacks can occur with the AWS Code Artifact service -- potentially even having npm execute rogue code just upon install!",
     createdAt: 1689315000,
+    images: "",
   },
   {
     id: "3",
     handle: "yminsky",
     text: "So...does anyone have advice for picking between the various and sundry Python type systems? mypy, pyright, pyre, pytype...how do you pick?",
     createdAt: 1689299980,
+    images: "",
   },
   {
     id: "4",
     handle: "devseccon",
     text: "Missed the interactive workshop on OWASP TOP 10 Security API 2023 x GraphQL at DSC24? Watch now...",
     createdAt: 1681447919,
+    images: "",
   },
   {
     id: "5",
     handle: "clintgibler",
     text: "findmytakeover scans aws, azure, and google cloud for dangling DNS records and potential subdomain takeovers #cloudsec",
     createdAt: 1586839919,
+    images: "",
   },
 ];
 

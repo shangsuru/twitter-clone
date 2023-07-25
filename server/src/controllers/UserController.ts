@@ -3,6 +3,18 @@ import User from "../models/User";
 import Follow from "../models/Follow";
 import Tweet from "../models/Tweet";
 import jwt from "jsonwebtoken";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  endpoint: process.env.S3_ENDPOINT,
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 async function getUser(req: Request, res: Response) {
   const { userId } = req.params;
@@ -42,6 +54,25 @@ async function getUser(req: Request, res: Response) {
       tweets.sort((a, b) => {
         return b.createdAt - a.createdAt;
       });
+      for (let tweet of tweets) {
+        // Convert image IDs to presigned URLs
+        if (tweet.images) {
+          const imageIds = tweet.images.split(",");
+          const imageUrls = [];
+          for (let id of imageIds) {
+            const url = await getSignedUrl(
+              s3,
+              new GetObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: id,
+              }),
+              { expiresIn: 3600 }
+            );
+            imageUrls.push(url);
+          }
+          tweet.images = imageUrls;
+        }
+      }
 
       // Compute the number of followers and following
       const followersCount = (await Follow.query("followed").eq(userId).exec())

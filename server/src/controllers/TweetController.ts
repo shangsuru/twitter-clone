@@ -58,7 +58,12 @@ function postTweet(req: Request, res: Response) {
             new PutObjectCommand({
               Bucket: process.env.S3_BUCKET_NAME,
               Key: key,
-              Body: "", //image.body, // TODO: image body is not correctly sent from client
+              Body: Buffer.from(
+                image.body.replace(/^data:image\/\w+;base64,/, ""),
+                "base64"
+              ),
+              ContentEncoding: "base64",
+              ContentType: "image/jpeg",
             })
           );
           keysOfSavedImages.push(key);

@@ -42,7 +42,7 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
         images: fileList.map((file) => {
           return {
             name: file.name,
-            body: file.originFileObj,
+            body: file.thumbUrl,
           };
         }),
       }),

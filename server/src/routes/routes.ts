@@ -13,6 +13,7 @@ import {
   getPersonalTweets,
   postTweet,
   deleteTweet,
+  editTweet,
 } from "../controllers/TweetController";
 
 export default function routes(app: Express) {
@@ -20,6 +21,7 @@ export default function routes(app: Express) {
   app.get("/tweets", getAllTweets);
   app.get("/tweets/:userId", getPersonalTweets);
   app.delete("/tweets/:tweetId", deleteTweet);
+  app.patch("/tweets/:tweetId", editTweet);
   app.post("/users/follow", followUser);
   app.delete("/users/unfollow", unfollowUser);
   app.get("/users/:userId/following", getFollowing);

@@ -13,6 +13,8 @@ interface TweetCardProps {
   image: string;
   editable: boolean;
   deleteTweet?: () => void;
+  JWT: string | undefined;
+  tweetId: string;
   key: React.Key;
 }
 
@@ -24,6 +26,8 @@ export default function TweetCard({
   image,
   editable,
   deleteTweet,
+  JWT,
+  tweetId,
 }: TweetCardProps) {
   const [edit, setEdit] = useState(false);
   const [savedText, setSavedText] = useState(text);
@@ -67,6 +71,16 @@ export default function TweetCard({
               onClick={() => {
                 if (edit) {
                   setSavedText(newText);
+                  fetch(`${process.env.PUBLIC_API_URL}/tweets/${tweetId}`, {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${JWT}`,
+                    },
+                    body: JSON.stringify({
+                      text: newText,
+                    }),
+                  });
                 }
                 setEdit(!edit);
               }}

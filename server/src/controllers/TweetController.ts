@@ -170,4 +170,44 @@ function deleteTweet(req: Request, res: Response) {
   });
 }
 
-export { postTweet, getAllTweets, getPersonalTweets, deleteTweet };
+function editTweet(req: Request, res: Response) {
+  const { tweetId } = req.params;
+  const { text } = req.body;
+
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).send({ message: "Unauthorized" });
+    return;
+  }
+  const token = authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, verifiedJwt) => {
+    if (err) {
+      res.send(err.message);
+    } else {
+      if (!verifiedJwt || typeof verifiedJwt === "string") {
+        res.send(401).send({ message: "Unauthorized" });
+        return;
+      }
+
+      const handle = verifiedJwt.id.split("@")[0];
+
+      const tweet = await Tweet.query("id").eq(tweetId).exec();
+      if (tweet.length == 0) {
+        res.status(404).send({ message: "Tweet not found" });
+        return;
+      }
+
+      if (tweet[0].handle != handle) {
+        res.status(401).send({ message: "Cannot edit tweets of other users" });
+        return;
+      }
+
+      tweet[0].text = text;
+      await tweet[0].save();
+      res.send(tweet[0]);
+    }
+  });
+}
+
+export { postTweet, getAllTweets, getPersonalTweets, deleteTweet, editTweet };

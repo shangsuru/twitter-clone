@@ -91,7 +91,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
     return <p>Loading...</p>;
   }
 
-  if (!data || !data.user || !data.user.email) {
+  if (!data || !data.user || !data.user.email || !data.token) {
     signOut();
     redirect("/login");
   }
@@ -222,6 +222,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
       <div style={{ marginTop: 20 }}>
         {ownTweets.map((tweet) => (
           <TweetCard
+            tweetId={tweet.id}
             editable={true}
             key={tweet.id}
             sender={username}
@@ -229,6 +230,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
             image={image}
             text={tweet.text}
             createdAt={tweet.createdAt}
+            JWT={data.token}
             deleteTweet={() => {
               setOwnTweets(ownTweets.filter((t) => t.id !== tweet.id));
               fetch(`${process.env.PUBLIC_API_URL}/tweets/${tweet.id}`, {

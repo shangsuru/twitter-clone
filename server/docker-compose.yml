@@ -17,6 +17,12 @@ services:
     volumes:
       - "minio:/data/minio"
     command: minio server /data/minio --console-address ":9090"
+
+  create_buckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: /bin/sh -c "sleep 10; /usr/bin/mc config host rm s3; /usr/bin/mc config host add --quiet --api s3v4 s3 http://minio:9000 root password; /usr/bin/mc mb --quiet s3/images; /usr/bin/mc policy set public s3/images; exit 0;"
 volumes:
   minio:
     driver: local

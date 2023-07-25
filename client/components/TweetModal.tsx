@@ -10,13 +10,12 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
   const [tweet, setTweet] = useState("");
 
   const s3 = new S3({
-    endpoint: "http://localhost:9000", // for docker, http://minio:9000
+    endpoint: "http://localhost:9000",
     credentials: {
-      accessKeyId: "root", // MINIO_ROOT_USER
-      secretAccessKey: "password", // MINIO_ROOT_PASSWORD
+      accessKeyId: process.env.MINIO_ROOT_USER!,
+      secretAccessKey: process.env.MINIO_ROOT_PASSWORD!,
     },
     region: "ap-northeast-1",
-    s3ForcePathStyle: true, // important
   });
 
   s3.listBuckets({}).then((res) => console.log(res));

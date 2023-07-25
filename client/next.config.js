@@ -18,6 +18,8 @@ const throwIfNot = function (obj, prop, msg) {
   "AWS_SECRET_ACCESS_KEY",
   "AWS_REGION",
   "PUBLIC_API_URL",
+  "MINIO_ROOT_USER",
+  "MINIO_ROOT_PASSWORD",
 ].forEach((v) => {
   throwIfNot(process.env, v);
 });
@@ -34,6 +36,8 @@ const nextConfig = {
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_REGION: process.env.AWS_REGION,
     PUBLIC_API_URL: process.env.PUBLIC_API_URL,
+    MINIO_ROOT_USER: process.env.MINIO_ROOT_USER,
+    MINIO_ROOT_PASSWORD: process.env.MINIO_ROOT_PASSWORD,
   },
 };
 

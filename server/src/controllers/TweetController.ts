@@ -45,6 +45,10 @@ function postTweet(req: Request, res: Response) {
 async function getAllTweets(req: Request, res: Response) {
   const tweets = await Tweet.scan().exec();
 
+  tweets.sort((a, b) => {
+    return b.createdAt - a.createdAt;
+  });
+
   // For each tweet, get the username and image of its sender
   let userDataCache = new Map<string, { image: string; username: string }>();
   let tweetsWithUser: object[] = [];
@@ -94,6 +98,10 @@ async function getPersonalTweets(req: Request, res: Response) {
     const userTweets = await Tweet.query("handle").eq(user.followed).exec();
     tweets = tweets.concat(userTweets);
   }
+
+  tweets.sort((a, b) => {
+    return b.createdAt - a.createdAt;
+  });
 
   // For each tweet, get the username and image of its sender
   let userDataCache = new Map<string, { image: string; username: string }>();

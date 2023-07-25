@@ -39,6 +39,9 @@ async function getUser(req: Request, res: Response) {
 
       // Get the tweets of the user
       const tweets = await Tweet.query("handle").eq(userId).exec();
+      tweets.sort((a, b) => {
+        return b.createdAt - a.createdAt;
+      });
 
       // Compute the number of followers and following
       const followersCount = (await Follow.query("followed").eq(userId).exec())

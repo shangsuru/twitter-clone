@@ -65,7 +65,7 @@ async function getAllTweets(req: Request, res: Response) {
     }
 
     const users = await User.query("handle").eq(tweet.handle).exec();
-    if (users.length == 0) {
+    if (users.length === 0) {
       continue;
     }
 
@@ -119,7 +119,7 @@ async function getPersonalTweets(req: Request, res: Response) {
     }
 
     const users = await User.query("handle").eq(tweet.handle).exec();
-    if (users.length == 0) {
+    if (users.length === 0) {
       continue;
     }
 
@@ -160,7 +160,7 @@ function deleteTweet(req: Request, res: Response) {
       const handle = verifiedJwt.id.split("@")[0];
 
       const tweet = await Tweet.query("id").eq(tweetId).exec();
-      if (tweet.length == 0) {
+      if (tweet.length === 0) {
         res.status(404).send({ message: "Tweet not found" });
         return;
       }
@@ -201,7 +201,7 @@ function editTweet(req: Request, res: Response) {
       const handle = verifiedJwt.id.split("@")[0];
 
       const tweet = await Tweet.query("id").eq(tweetId).exec();
-      if (tweet.length == 0) {
+      if (tweet.length === 0) {
         res.status(404).send({ message: "Tweet not found" });
         return;
       }

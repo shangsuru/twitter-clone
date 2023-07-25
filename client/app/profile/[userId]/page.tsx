@@ -151,7 +151,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
           />
           <br />
 
-          {params.userId == ownHandle && username && data.token && (
+          {params.userId === ownHandle && username && data.token && (
             <EditProfileModal
               image={ownImage}
               username={username}
@@ -223,7 +223,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
         {ownTweets.map((tweet) => (
           <TweetCard
             tweetId={tweet.id}
-            editable={params.userId == ownHandle}
+            editable={params.userId === ownHandle}
             key={tweet.id}
             sender={username}
             handle={handle}

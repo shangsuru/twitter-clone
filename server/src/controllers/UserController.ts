@@ -31,7 +31,7 @@ async function getUser(req: Request, res: Response) {
 
       // Get user info
       const users = await User.query("handle").eq(userId).exec();
-      if (users.length == 0) {
+      if (users.length === 0) {
         res.status(404).send({ message: "User not found" });
         return;
       }
@@ -49,7 +49,7 @@ async function getUser(req: Request, res: Response) {
       const followingCount = (await Follow.query("follower").eq(userId).exec())
         .length;
 
-      if (handle == userId) {
+      if (handle === userId) {
         res.send({
           ...user,
           tweets: tweets,
@@ -143,7 +143,7 @@ function updateUser(req: Request, res: Response) {
         .eq(handle)
         .exec()
         .then((users) => {
-          if (users.length == 0) {
+          if (users.length === 0) {
             res.status(505).send({ message: "Internal Server Error" });
           } else {
             const user = users[0];

@@ -21,7 +21,7 @@ export default function Header({ image, handle, JWT }: LoginDataProps) {
         </Link>
       </div>
       <div id="profile-icon-tweet-button">
-        {usePathname() == `/profile/${handle}` ? (
+        {usePathname() === `/profile/${handle}` ? (
           <LogoutButton />
         ) : (
           <>

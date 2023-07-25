@@ -14,6 +14,7 @@ const TweetsSchema = new dynamoose.Schema({
     type: Number,
     default: Math.floor(Date.now() / 1000),
   },
+  images: String,
 });
 
 export default dynamoose.model("Tweet", TweetsSchema);

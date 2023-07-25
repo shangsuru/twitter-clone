@@ -3,7 +3,7 @@ import { resolve } from "path";
 
 switch (process.env.NODE_ENV) {
   case "development":
-    configDotenv({ path: resolve(__dirname, "../.env.development") });
+    configDotenv({ path: resolve(__dirname, "../.env.local") });
     break;
   case "production":
     configDotenv({ path: resolve(__dirname, "../.env.production") });
@@ -30,12 +30,22 @@ const throwIfNot = function <T, K extends keyof T>(
   "AWS_ACCESS_KEY_ID",
   "AWS_SECRET_ACCESS_KEY",
   "AWS_REGION",
+  "S3_ENDPOINT",
+  "S3_BUCKET_NAME",
+  "NODE_ENV",
 ].forEach((v) => {
   throwIfNot(process.env, v);
 });
 
 export interface IProcessEnv {
   JWT_SECRET: string;
+  FRONTEND_URL: string;
+  AWS_ACCESS_KEY_ID: string;
+  AWS_SECRET_ACCESS_KEY: string;
+  AWS_REGION: string;
+  S3_ENDPOINT: string;
+  S3_BUCKET_NAME: string;
+  NODE_ENV: "development" | "production";
 }
 
 declare global {

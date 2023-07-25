@@ -4,9 +4,14 @@ import jwt from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import User from "../models/User";
 import Follow from "../models/Follow";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 
 function postTweet(req: Request, res: Response) {
-  const { text } = req.body;
+  const { text, images } = req.body;
   if (!text) {
     res.status(400).send({ message: "Missing text" });
     return;
@@ -30,10 +35,50 @@ function postTweet(req: Request, res: Response) {
 
       const handle = verifiedJwt.id.split("@")[0];
 
+      const s3 = new S3Client({
+        region: process.env.AWS_REGION,
+        endpoint: process.env.S3_ENDPOINT,
+        forcePathStyle: true,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        },
+      });
+
+      // For each image, upload it to S3
+      let keysOfSavedImages: string[] = [];
+      for (let i = 0; i < images.length; i++) {
+        try {
+          const image = images[i];
+          const key = Date.now().toString() + image.name.replace(",", "");
+          await s3.send(
+            new PutObjectCommand({
+              Bucket: process.env.S3_BUCKET_NAME,
+              Key: key,
+              Body: image.originFileObj,
+            })
+          );
+          keysOfSavedImages.push(key);
+        } catch (err) {
+          // On error, clean up all uploaded images so far
+          for (let key of keysOfSavedImages) {
+            await s3.send(
+              new DeleteObjectCommand({
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: key,
+              })
+            );
+          }
+          res.status(500).send({ message: "Error uploading images" });
+          return;
+        }
+      }
+
       const tweet = new Tweet({
         id: uuid(),
         handle: handle,
         text,
+        images: keysOfSavedImages.join(","),
       });
 
       await tweet.save();

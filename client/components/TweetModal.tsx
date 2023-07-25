@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Button, Input, Modal, Upload } from "antd";
 import { ProfileButton } from "./Buttons";
-import { S3 } from "@aws-sdk/client-s3";
 import { PlusOutlined } from "@ant-design/icons";
 import type { RcFile, UploadProps } from "antd/es/upload";
 import type { UploadFile } from "antd/es/upload/interface";
@@ -25,23 +24,13 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const s3 = new S3({
-    endpoint: "http://localhost:9000",
-    credentials: {
-      accessKeyId: process.env.MINIO_ROOT_USER!,
-      secretAccessKey: process.env.MINIO_ROOT_PASSWORD!,
-    },
-    region: "ap-northeast-1",
-  });
-
-  s3.listBuckets({}).then((res) => console.log(res));
-
   function showModal() {
     setOpen(true);
   }
 
-  function handleModalOk() {
+  async function handleModalOk() {
     setLoading(true);
+
     fetch(`${process.env.PUBLIC_API_URL}/tweets`, {
       method: "POST",
       headers: {
@@ -50,12 +39,19 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
       },
       body: JSON.stringify({
         text: tweet,
+        images: fileList.map((file) => {
+          return {
+            name: file.name,
+            body: file.originFileObj,
+          };
+        }),
       }),
     }).then((res) => {
       setLoading(false);
       if (res.ok) {
         setOpen(false);
         setTweet("");
+        setFileList([]);
       }
     });
   }
@@ -135,11 +131,18 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
           style={{ marginBottom: 30 }}
         />
         <Upload
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+          accept="image/png, image/jpeg"
           listType="picture-card"
           fileList={fileList}
           onPreview={handlePreview}
           onChange={handleChange}
+          customRequest={({ onSuccess }) => {
+            setTimeout(() => {
+              if (onSuccess) {
+                onSuccess("ok");
+              }
+            }, 500);
+          }}
         >
           {fileList.length >= 3 ? null : uploadButton}
         </Upload>

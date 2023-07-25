@@ -24,7 +24,6 @@ const s3 = new S3Client({
 
 function postTweet(req: Request, res: Response) {
   const { text, images } = req.body;
-  console.log(images);
   if (!text) {
     res.status(400).send({ message: "Missing text" });
     return;

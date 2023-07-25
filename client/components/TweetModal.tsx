@@ -31,6 +31,20 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
   async function handleModalOk() {
     setLoading(true);
 
+    function getBase64(file: RcFile) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+      });
+    }
+
+    for (let file of fileList) {
+      file.base64 = await getBase64(file.originFileObj!);
+      console.log(file.base64);
+    }
+
     fetch(`${process.env.PUBLIC_API_URL}/tweets`, {
       method: "POST",
       headers: {
@@ -42,7 +56,7 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
         images: fileList.map((file) => {
           return {
             name: file.name,
-            body: file.thumbUrl,
+            body: file.base64,
           };
         }),
       }),

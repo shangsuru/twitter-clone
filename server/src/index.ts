@@ -8,7 +8,8 @@ import addDummyData from "./utils/initDB";
 const app: Express = express();
 const port = 4000;
 
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ limit: "5mb", extended: true }));
 app.use(cors({ origin: process.env.FRONTEND_URL }));
 
 if (process.env.NODE_ENV === "development") {

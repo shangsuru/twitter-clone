@@ -12,12 +12,14 @@ import {
   getAllTweets,
   getPersonalTweets,
   postTweet,
+  deleteTweet,
 } from "../controllers/TweetController";
 
 export default function routes(app: Express) {
   app.post("/tweets", postTweet);
   app.get("/tweets", getAllTweets);
   app.get("/tweets/:userId", getPersonalTweets);
+  app.delete("/tweets/:tweetId", deleteTweet);
   app.post("/users/follow", followUser);
   app.delete("/users/unfollow", unfollowUser);
   app.get("/users/:userId/following", getFollowing);

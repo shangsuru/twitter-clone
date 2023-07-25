@@ -231,6 +231,12 @@ export default function Profile({ params }: { params: { userId: string } }) {
             createdAt={tweet.createdAt}
             deleteTweet={() => {
               setOwnTweets(ownTweets.filter((t) => t.id !== tweet.id));
+              fetch(`${process.env.PUBLIC_API_URL}/tweets/${tweet.id}`, {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${data.token}`,
+                },
+              });
             }}
           />
         ))}

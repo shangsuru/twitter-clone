@@ -2,11 +2,24 @@
 import { useState } from "react";
 import { Button, Input, Modal } from "antd";
 import { ProfileButton } from "./Buttons";
+import { S3 } from "@aws-sdk/client-s3";
 
 export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [tweet, setTweet] = useState("");
+
+  const s3 = new S3({
+    endpoint: "http://localhost:9000", // for docker, http://minio:9000
+    credentials: {
+      accessKeyId: "root", // MINIO_ROOT_USER
+      secretAccessKey: "password", // MINIO_ROOT_PASSWORD
+    },
+    region: "ap-northeast-1",
+    s3ForcePathStyle: true, // important
+  });
+
+  s3.listBuckets({}).then((res) => console.log(res));
 
   function showModal() {
     setOpen(true);

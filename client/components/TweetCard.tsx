@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Avatar, Button, Card, Input } from "antd";
+import { Avatar, Button, Card, Input, Image } from "antd";
 import Link from "next/link";
 
 import { timeAgo } from "@/utils/utils";
@@ -102,15 +102,12 @@ export default function TweetCard({
         )}
 
         {images && (
-          <div style={{ marginTop: 10 }}>
-            {images.map((image) => (
-              <img
-                key={image}
-                src={image}
-                alt="Tweet Image"
-                style={{ width: "100%", height: "auto" }}
-              />
-            ))}
+          <div style={{ marginTop: 60 }}>
+            <Image.PreviewGroup>
+              {images.map((image) => (
+                <Image key={image} src={image} alt="Tweet Image" width={100} />
+              ))}
+            </Image.PreviewGroup>
           </div>
         )}
       </Card>

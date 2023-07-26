@@ -41,8 +41,7 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
     }
 
     for (let file of fileList) {
-      file.base64 = await getBase64(file.originFileObj!);
-      console.log(file.base64);
+      file.base64 = (await getBase64(file.originFileObj!)) as string;
     }
 
     fetch(`${process.env.PUBLIC_API_URL}/tweets`, {

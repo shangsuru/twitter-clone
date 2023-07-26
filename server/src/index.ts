@@ -15,7 +15,27 @@ app.use(cors({ origin: process.env.FRONTEND_URL }));
 if (process.env.NODE_ENV === "development") {
   dynamoose.aws.ddb.local("http://localhost:8000");
 } else {
-  throw Error("DynamoDB not setup for production");
+  const ddb = new dynamoose.aws.ddb.DynamoDB({
+    region: process.env.AWS_REGION,
+  });
+  dynamoose.aws.ddb.set(ddb);
+
+  dynamoose.Table.defaults.set({
+    create: true,
+    throughput: "ON_DEMAND",
+    prefix: "intern-henryhelm-",
+    suffix: "",
+    waitForActive: {
+      enabled: true,
+      check: {
+        timeout: 180000,
+        frequency: 1000,
+      },
+    },
+    update: false,
+    tags: { Name: "intern-henryhelm", Project: "intern-henryhelm" },
+    initialize: true,
+  });
 }
 
 addDummyData();

@@ -18,28 +18,6 @@ import { AntdStyle } from "../../AntdStyle";
 
 const { Title, Text } = Typography;
 
-type TweetData = {
-  id: string;
-  sender: string;
-  handle: string;
-  text: string;
-  createdAt: number;
-};
-
-type UserData = {
-  createdAt: number;
-  handle: string;
-  username: string;
-  image: string;
-  bio?: string;
-  location?: string;
-  website?: string;
-  followed?: boolean;
-  following?: number;
-  followers?: number;
-  tweets?: TweetData[];
-};
-
 export default function Profile({ params }: { params: { userId: string } }) {
   const [username, setUsername] = useState("");
   const [handle, setHandle] = useState("");
@@ -76,8 +54,8 @@ export default function Profile({ params }: { params: { userId: string } }) {
           if (data.website) setWebsite(data.website);
           setCreatedAt(data.createdAt);
           if (data.followed) setFollowed(data.followed);
-          setFollowing(data.following!);
-          setFollowers(data.followers!);
+          setFollowing(data.following_count!);
+          setFollowers(data.followers_count!);
           setOwnTweets(data.tweets ?? []);
         });
       } else {

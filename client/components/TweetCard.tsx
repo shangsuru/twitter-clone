@@ -13,8 +13,8 @@ interface TweetCardProps {
   image: string;
   editable: boolean;
   deleteTweet?: () => void;
-  JWT: string | undefined;
-  tweetId: string;
+  JWT?: string;
+  tweetId?: string;
   images: string[];
   key: React.Key;
 }

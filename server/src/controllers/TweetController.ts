@@ -94,6 +94,7 @@ async function postTweet(req: Request, res: Response) {
     handle: handle,
     text,
     images: keysOfSavedImages.join(","),
+    createdAt: Math.floor(Date.now() / 1000),
   });
 
   await tweet.save();
@@ -103,11 +104,11 @@ async function postTweet(req: Request, res: Response) {
 async function getAllTweets(req: Request, res: Response) {
   const tweets = await Tweet.scan().exec();
 
-  tweets.sort((a, b) => {
+  let tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
+
+  tweetsWithUser.sort((a, b) => {
     return b.createdAt - a.createdAt;
   });
-
-  let tweetsWithUser: object[] = await addUserInfoAndImageUrls(tweets);
 
   res.send(tweetsWithUser);
 }
@@ -127,11 +128,11 @@ async function getPersonalTweets(req: Request, res: Response) {
     tweets = tweets.concat(userTweets);
   }
 
-  tweets.sort((a, b) => {
+  let tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
+
+  tweetsWithUser.sort((a, b) => {
     return b.createdAt - a.createdAt;
   });
-
-  let tweetsWithUser: object[] = await addUserInfoAndImageUrls(tweets);
 
   res.send(tweetsWithUser);
 }

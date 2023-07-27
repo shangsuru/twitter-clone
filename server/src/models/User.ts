@@ -15,7 +15,7 @@ const UserSchema = new dynamoose.Schema({
   website: String,
   createdAt: {
     type: Number,
-    default: Math.floor(Date.now() / 1000),
+    required: true,
   },
 });
 

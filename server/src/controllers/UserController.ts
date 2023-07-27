@@ -23,9 +23,7 @@ async function getUser(req: Request, res: Response) {
 
   // Get the tweets of the user
   const tweets = await Tweet.query("handle").eq(userId).exec();
-  tweets.sort((a, b) => {
-    return b.createdAt - a.createdAt;
-  });
+
   for (let tweet of tweets) {
     await imageKeysToPresignedUrl(tweet);
   }
@@ -35,6 +33,10 @@ async function getUser(req: Request, res: Response) {
     .length;
   const followingCount = (await Follow.query("follower").eq(userId).exec())
     .length;
+
+  tweets.sort((a, b) => {
+    return b.createdAt - a.createdAt;
+  });
 
   if (handle === userId) {
     res.send({
@@ -91,6 +93,7 @@ function createUser(req: Request, res: Response) {
           handle: handle,
           username: username,
           image: image,
+          createdAt: Math.floor(Date.now() / 1000),
         });
         newUser.save().then((user) => {
           res.send(user);

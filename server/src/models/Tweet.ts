@@ -12,7 +12,7 @@ const TweetsSchema = new dynamoose.Schema({
   text: String,
   createdAt: {
     type: Number,
-    default: Math.floor(Date.now() / 1000),
+    required: true,
   },
   images: String,
 });

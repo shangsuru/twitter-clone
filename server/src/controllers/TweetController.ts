@@ -3,31 +3,8 @@ import Tweet from "../models/Tweet";
 import { v4 as uuid } from "uuid";
 import User from "../models/User";
 import Follow from "../models/Follow";
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
-import type { S3ClientConfig } from "@aws-sdk/client-s3";
-import imageKeysToPresignedUrl from "../utils/presignedUrl";
-
-const config: S3ClientConfig =
-  process.env.NODE_ENV === "production"
-    ? {
-        region: process.env.AWS_REGION,
-        forcePathStyle: true,
-      }
-    : {
-        region: process.env.AWS_REGION,
-        endpoint: process.env.S3_ENDPOINT,
-        forcePathStyle: true,
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        },
-      };
-
-const s3: S3Client = new S3Client(config);
+import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { imageKeysToPresignedUrl, s3 } from "../utils/s3";
 
 async function addUserInfoAndImageUrls(tweets: any[]) {
   let userDataCache = new Map<string, { image: string; username: string }>();
@@ -35,7 +12,7 @@ async function addUserInfoAndImageUrls(tweets: any[]) {
   for (let i = 0; i < tweets.length; i++) {
     const tweet = tweets[i];
 
-    await imageKeysToPresignedUrl(s3, tweet);
+    await imageKeysToPresignedUrl(tweet);
 
     if (userDataCache.has(tweet.handle) && userDataCache.get(tweet.handle)) {
       const user = userDataCache.get(tweet.handle);

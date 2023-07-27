@@ -2,27 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import Follow from "../models/Follow";
 import Tweet from "../models/Tweet";
-import { S3Client } from "@aws-sdk/client-s3";
-import type { S3ClientConfig } from "@aws-sdk/client-s3";
-import imageKeysToPresignedUrl from "../utils/presignedUrl";
-
-const config: S3ClientConfig =
-  process.env.NODE_ENV === "production"
-    ? {
-        region: process.env.AWS_REGION,
-        forcePathStyle: true,
-      }
-    : {
-        region: process.env.AWS_REGION,
-        endpoint: process.env.S3_ENDPOINT,
-        forcePathStyle: true,
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        },
-      };
-
-const s3: S3Client = new S3Client(config);
+import { s3, imageKeysToPresignedUrl } from "../utils/s3";
 
 async function getUser(req: Request, res: Response) {
   const { userId } = req.params;
@@ -47,7 +27,7 @@ async function getUser(req: Request, res: Response) {
     return b.createdAt - a.createdAt;
   });
   for (let tweet of tweets) {
-    await imageKeysToPresignedUrl(s3, tweet);
+    await imageKeysToPresignedUrl(tweet);
   }
 
   // Compute the number of followers and following

@@ -149,7 +149,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
           <Image
             id="profile-image"
             preview={false}
-            src={image}
+            src={params.userId === ownHandle ? ownImage : image}
             alt="Profile Image"
           />
           <br />

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Avatar, Button, Divider, Modal, Input } from "antd";
+import api from "@/utils/api";
 
 interface EditProfileModalProps {
   image: string;
@@ -33,6 +34,26 @@ export default function EditProfileModal({
   const [inputLocation, setInputLocation] = useState(location);
   const [inputWebsite, setInputWebsite] = useState(website);
 
+  function updateUserInfo() {
+    api(
+      "users/profile",
+      "PATCH",
+      {
+        username: inputName,
+        bio: inputBio,
+        website: website,
+        location: inputLocation,
+      },
+      JWT
+    ).then((res) => {
+      setLoading(false);
+      if (res.ok) {
+        updateState(inputName, inputBio!, inputLocation!, website!);
+        setOpen(false);
+      }
+    });
+  }
+
   function showModal() {
     setOpen(true);
   }
@@ -40,25 +61,7 @@ export default function EditProfileModal({
   function handleModalOk() {
     setLoading(true);
     website = inputWebsite!.replace("https://", "");
-    fetch(`${process.env.PUBLIC_API_URL}/backend/users/profile`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${JWT}`,
-      },
-      body: JSON.stringify({
-        username: inputName,
-        bio: inputBio,
-        website: website,
-        location: inputLocation,
-      }),
-    }).then((res) => {
-      setLoading(false);
-      if (res.ok) {
-        updateState(inputName, inputBio!, inputLocation!, website!);
-        setOpen(false);
-      }
-    });
+    updateUserInfo();
   }
 
   function handleModalCancel() {

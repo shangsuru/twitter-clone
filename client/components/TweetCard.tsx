@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { timeAgo } from "@/utils/utils";
 import { DeleteOutlined, EditOutlined, SaveOutlined } from "@ant-design/icons";
+import api from "@/utils/api";
 
 interface TweetCardProps {
   sender: string;
@@ -74,19 +75,7 @@ export default function TweetCard({
             onClick={() => {
               if (edit) {
                 setSavedText(newText);
-                fetch(
-                  `${process.env.PUBLIC_API_URL}/backend/tweets/${tweetId}`,
-                  {
-                    method: "PATCH",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${JWT}`,
-                    },
-                    body: JSON.stringify({
-                      text: newText,
-                    }),
-                  }
-                );
+                api(`tweets/${tweetId}`, "PATCH", { text: newText }, JWT);
               }
               setEdit(!edit);
             }}

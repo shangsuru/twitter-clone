@@ -9,10 +9,25 @@ import { redirect } from "next/navigation";
 import UserCard from "@/components/UserCard";
 import Header from "@/components/Header";
 import { AntdStyle } from "../../AntdStyle";
+import api from "@/utils/api";
 
 export default function Follow({ params }: { params: { userId: string } }) {
   const [followers, setFollowers] = useState<UserData[]>([]);
   const [following, setFollowing] = useState<UserData[]>([]);
+
+  function getFollowingandFollowers() {
+    api(`users/${params.userId}/following`, "GET")
+      .then((res) => res.json())
+      .then((data) => {
+        setFollowing(data);
+      });
+
+    api(`users/${params.userId}/followers`, "GET")
+      .then((res) => res.json())
+      .then((data) => {
+        setFollowers(data);
+      });
+  }
 
   const items: Tab[] = [
     {
@@ -51,31 +66,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
-    fetch(
-      `${process.env.PUBLIC_API_URL}/backend/users/${params.userId}/following`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setFollowing(data);
-      });
-
-    fetch(
-      `${process.env.PUBLIC_API_URL}/backend/users/${params.userId}/followers`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setFollowers(data);
-      });
+    getFollowingandFollowers();
   }, [params.userId]);
 
   if (status === "loading") {

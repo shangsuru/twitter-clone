@@ -5,6 +5,7 @@ import { ProfileButton } from "./Buttons";
 import { PlusOutlined } from "@ant-design/icons";
 import type { RcFile, UploadProps } from "antd/es/upload";
 import type { UploadFile } from "antd/es/upload/interface";
+import api from "@/utils/api";
 
 const getBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -23,6 +24,30 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  function postTweet() {
+    api(
+      "tweets",
+      "POST",
+      {
+        text: tweet,
+        images: fileList.map((file) => {
+          return {
+            name: file.name,
+            body: file.base64,
+          };
+        }),
+      },
+      JWT
+    ).then((res) => {
+      setLoading(false);
+      if (res.ok) {
+        setOpen(false);
+        setTweet("");
+        setFileList([]);
+      }
+    });
+  }
 
   function showModal() {
     setOpen(true);
@@ -44,29 +69,7 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
       file.base64 = (await getBase64(file.originFileObj!)) as string;
     }
 
-    fetch(`${process.env.PUBLIC_API_URL}/backend/tweets`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${JWT}`,
-      },
-      body: JSON.stringify({
-        text: tweet,
-        images: fileList.map((file) => {
-          return {
-            name: file.name,
-            body: file.base64,
-          };
-        }),
-      }),
-    }).then((res) => {
-      setLoading(false);
-      if (res.ok) {
-        setOpen(false);
-        setTweet("");
-        setFileList([]);
-      }
-    });
+    postTweet();
   }
 
   function handleModalCancel() {

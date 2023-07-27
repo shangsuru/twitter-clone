@@ -2,7 +2,7 @@ import { Express, NextFunction } from "express";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-async function jwtVerify(token: string): Promise<any> {
+async function jwtVerify(token: string): Promise<jwt.JwtPayload> {
   return new Promise((resolve, reject) => {
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) return reject(err);

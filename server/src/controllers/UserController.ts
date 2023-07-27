@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import Follow from "../models/Follow";
 import Tweet from "../models/Tweet";
-import { s3, imageKeysToPresignedUrl } from "../utils/s3";
+import { imageKeysToPresignedUrl } from "../utils/s3";
 
 async function getUser(req: Request, res: Response) {
   const { userId } = req.params;

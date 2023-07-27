@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Divider, Typography, Image, Button } from "antd";
 import {
@@ -15,6 +15,7 @@ import EditProfileModal from "@/components/EditProfileModal";
 import { timeToDate } from "@/utils/utils";
 import Header from "@/components/Header";
 import { AntdStyle } from "../../AntdStyle";
+import api from "@/utils/api";
 
 const { Title, Text } = Typography;
 
@@ -31,6 +32,57 @@ export default function Profile({ params }: { params: { userId: string } }) {
   const [followers, setFollowers] = useState(0);
   const [ownTweets, setOwnTweets] = useState<TweetData[]>([]);
 
+  function getUserInfo() {
+    api(`users/profile/${params.userId}`, "GET", {}, data?.token).then(
+      (res) => {
+        if (res.ok) {
+          res.json().then((data: UserData) => {
+            setUsername(data.username);
+            setImage(data.image);
+            setHandle(data.handle);
+            if (data.bio) setBio(data.bio);
+            if (data.location) setLocation(data.location);
+            if (data.website) setWebsite(data.website);
+            setCreatedAt(data.createdAt);
+            if (data.followed) setFollowed(data.followed);
+            setFollowing(data.following!);
+            setFollowers(data.followers!);
+            setOwnTweets(data.tweets ?? []);
+          });
+        }
+      }
+    );
+  }
+
+  function follow() {
+    api("users/follow", "POST", { userId: params.userId }, data?.token).then(
+      (res) => {
+        if (res.ok) {
+          setFollowed(!followed);
+          setFollowers(followers + 1);
+        }
+      }
+    );
+  }
+
+  function unfollow() {
+    api(
+      "users/unfollow",
+      "DELETE",
+      { userId: params.userId },
+      data?.token
+    ).then((res) => {
+      if (res.ok) {
+        setFollowed(!followed);
+        setFollowers(followers - 1);
+      }
+    });
+  }
+
+  function deleteTweet(tweet: TweetData) {
+    api(`tweets/${tweet.id}`, "DELETE", {}, data?.token);
+  }
+
   const { data, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -40,30 +92,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
 
   useEffect(() => {
     if (!data?.token) return;
-    fetch(
-      `${process.env.PUBLIC_API_URL}/backend/users/profile/${params.userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${data?.token}`,
-        },
-      }
-    ).then((res) => {
-      if (res.ok) {
-        res.json().then((data: UserData) => {
-          setUsername(data.username);
-          setImage(data.image);
-          setHandle(data.handle);
-          if (data.bio) setBio(data.bio);
-          if (data.location) setLocation(data.location);
-          if (data.website) setWebsite(data.website);
-          setCreatedAt(data.createdAt);
-          if (data.followed) setFollowed(data.followed);
-          setFollowing(data.following!);
-          setFollowers(data.followers!);
-          setOwnTweets(data.tweets ?? []);
-        });
-      }
-    });
+    getUserInfo();
   }, [params.userId, data?.token]);
 
   if (!data || !data.user || !data.user.email || !data.token || !username) {
@@ -152,40 +181,9 @@ export default function Profile({ params }: { params: { userId: string } }) {
               shape="round"
               onClick={() => {
                 if (followed) {
-                  fetch(
-                    `${process.env.PUBLIC_API_URL}/backend/users/unfollow`,
-                    {
-                      method: "DELETE",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${data.token}`,
-                      },
-                      body: JSON.stringify({
-                        userId: params.userId,
-                      }),
-                    }
-                  ).then((res) => {
-                    if (res.ok) {
-                      setFollowed(!followed);
-                      setFollowers(followers - 1);
-                    }
-                  });
+                  unfollow();
                 } else {
-                  fetch(`${process.env.PUBLIC_API_URL}/backend/users/follow`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${data.token}`,
-                    },
-                    body: JSON.stringify({
-                      userId: params.userId,
-                    }),
-                  }).then((res) => {
-                    if (res.ok) {
-                      setFollowed(!followed);
-                      setFollowers(followers + 1);
-                    }
-                  });
+                  follow();
                 }
               }}
             >
@@ -211,15 +209,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
             JWT={data.token}
             deleteTweet={() => {
               setOwnTweets(ownTweets.filter((t) => t.id !== tweet.id));
-              fetch(
-                `${process.env.PUBLIC_API_URL}/backend/tweets/${tweet.id}`,
-                {
-                  method: "DELETE",
-                  headers: {
-                    Authorization: `Bearer ${data.token}`,
-                  },
-                }
-              );
+              deleteTweet(tweet);
             }}
           />
         ))}

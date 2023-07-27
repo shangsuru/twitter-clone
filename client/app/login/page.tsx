@@ -1,8 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
-
-import { LoginButton, LogoutButton } from "@/components/Buttons";
+import { LoginButton } from "@/components/Buttons";
 import { redirect } from "next/navigation";
 import { Image } from "antd";
 import { AntdStyle } from "../AntdStyle";

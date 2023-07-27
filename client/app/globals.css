@@ -54,6 +54,14 @@ Divider {
   color: grey;
 }
 
+#edit-tweets {
+  float: right;
+  display: flex;
+  justify-content: space-around;
+  gap: 5px;
+  margin-top: 20px;
+}
+
 .avatar {
   background-color: #f56a00;
   margin-right: 5px;

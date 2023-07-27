@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
 import { signOut, useSession } from "next-auth/react";
@@ -51,7 +51,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
-    fetch(`http://localhost:4000/users/${params.userId}/following`, {
+    fetch(`${process.env.PUBLIC_API_URL}/users/${params.userId}/following`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -61,7 +61,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
         setFollowing(data);
       });
 
-    fetch(`http://localhost:4000/users/${params.userId}/followers`, {
+    fetch(`${process.env.PUBLIC_API_URL}/users/${params.userId}/followers`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -86,7 +86,7 @@ export default function Follow({ params }: { params: { userId: string } }) {
 
   return (
     <AntdStyle>
-      <Header image={image} handle={handle} />
+      <Header image={image} handle={handle} JWT={data.token} />
       <Tabs defaultActiveKey="1" items={items} />
     </AntdStyle>
   );

@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
-import { Avatar, Button, Input, Modal } from "antd";
+import { useState } from "react";
+import { Button, Input, Modal } from "antd";
 import { ProfileButton } from "./Buttons";
 
-export default function TweetModal({ image, handle }: LoginDataProps) {
+export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [tweet, setTweet] = useState("");
 
   function showModal() {
     setOpen(true);
@@ -13,10 +14,22 @@ export default function TweetModal({ image, handle }: LoginDataProps) {
 
   function handleModalOk() {
     setLoading(true);
-    setTimeout(() => {
+    fetch(`${process.env.PUBLIC_API_URL}/tweets`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JWT}`,
+      },
+      body: JSON.stringify({
+        text: tweet,
+      }),
+    }).then((res) => {
       setLoading(false);
-      setOpen(false);
-    }, 3000);
+      if (res.ok) {
+        setOpen(false);
+        setTweet("");
+      }
+    });
   }
 
   function handleModalCancel() {
@@ -24,7 +37,7 @@ export default function TweetModal({ image, handle }: LoginDataProps) {
   }
 
   function onTextAreaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    console.log("Change:", e.target.value);
+    setTweet(e.target.value);
   }
 
   return (
@@ -66,6 +79,7 @@ export default function TweetModal({ image, handle }: LoginDataProps) {
           maxLength={200}
           onChange={onTextAreaChange}
           placeholder="..."
+          value={tweet}
         />
       </Modal>
     </>

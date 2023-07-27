@@ -107,10 +107,7 @@ async function getAllTweets(req: Request, res: Response) {
 }
 
 async function getPersonalTweets(req: Request, res: Response) {
-  // Get the handle from the request
   const { userId } = req.params;
-
-  // Find all users that this user follows
   let followed = await getFollowed(userId);
 
   // Get the tweets of the users that the user follows

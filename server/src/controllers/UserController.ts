@@ -21,7 +21,6 @@ async function getUser(req: Request, res: Response) {
     return;
   }
 
-  // Get user info
   const users = await getUsersByHandle(userId);
   if (users.length === 0) {
     res.status(404).send({ message: "User not found" });
@@ -29,14 +28,12 @@ async function getUser(req: Request, res: Response) {
   }
   const user = users[0];
 
-  // Get the tweets of the user
   const tweets = await getTweetsByUser(userId);
 
   for (let tweet of tweets) {
     await imageKeysToPresignedUrl(tweet);
   }
 
-  // Compute the number of followers and following
   const followersCount = await getFollowersCount(userId);
   const followingCount = await getFollowingCount(userId);
 

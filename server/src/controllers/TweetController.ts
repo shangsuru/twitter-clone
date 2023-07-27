@@ -30,76 +30,57 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-function postTweet(req: Request, res: Response) {
-  const { text, images } = req.body;
+async function postTweet(req: Request, res: Response) {
+  const { text, images, handle } = req.body;
+
   if (!text) {
     res.status(400).send({ message: "Missing text" });
     return;
   }
 
-  const authorization = req.headers.authorization;
-  if (!authorization) {
-    res.status(401).send({ message: "Unauthorized" });
-    return;
-  }
-  const token = authorization.split(" ")[1];
-
-  jwt.verify(token, process.env.JWT_SECRET, async (err, verifiedJwt) => {
-    if (err) {
-      res.send(err.message);
-    } else {
-      if (!verifiedJwt || typeof verifiedJwt === "string") {
-        res.send(401).send({ message: "Unauthorized" });
-        return;
+  // For each image, upload it to S3
+  let keysOfSavedImages: string[] = [];
+  for (let i = 0; i < images.length; i++) {
+    try {
+      const image = images[i];
+      const key = Date.now().toString() + image.name.replace(",", "");
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: key,
+          Body: Buffer.from(
+            image.body.replace(/^data:image\/\w+;base64,/, ""),
+            "base64"
+          ),
+          ContentEncoding: "base64",
+          ContentType: "image/jpeg",
+        })
+      );
+      keysOfSavedImages.push(key);
+    } catch (err) {
+      // On error, clean up all uploaded images so far
+      for (let key of keysOfSavedImages) {
+        await s3.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: key,
+          })
+        );
       }
-
-      const handle = verifiedJwt.id.split("@")[0];
-
-      // For each image, upload it to S3
-      let keysOfSavedImages: string[] = [];
-      for (let i = 0; i < images.length; i++) {
-        try {
-          const image = images[i];
-          const key = Date.now().toString() + image.name.replace(",", "");
-          await s3.send(
-            new PutObjectCommand({
-              Bucket: process.env.S3_BUCKET_NAME,
-              Key: key,
-              Body: Buffer.from(
-                image.body.replace(/^data:image\/\w+;base64,/, ""),
-                "base64"
-              ),
-              ContentEncoding: "base64",
-              ContentType: "image/jpeg",
-            })
-          );
-          keysOfSavedImages.push(key);
-        } catch (err) {
-          // On error, clean up all uploaded images so far
-          for (let key of keysOfSavedImages) {
-            await s3.send(
-              new DeleteObjectCommand({
-                Bucket: process.env.S3_BUCKET_NAME,
-                Key: key,
-              })
-            );
-          }
-          res.status(500).send({ message: "Error uploading images" });
-          return;
-        }
-      }
-
-      const tweet = new Tweet({
-        id: uuid(),
-        handle: handle,
-        text,
-        images: keysOfSavedImages.join(","),
-      });
-
-      await tweet.save();
-      res.send(tweet);
+      res.status(500).send({ message: "Error uploading images" });
+      return;
     }
+  }
+
+  const tweet = new Tweet({
+    id: uuid(),
+    handle: handle,
+    text,
+    images: keysOfSavedImages.join(","),
   });
+
+  await tweet.save();
+  res.send(tweet);
 }
 
 async function getAllTweets(req: Request, res: Response) {
@@ -236,96 +217,60 @@ async function getPersonalTweets(req: Request, res: Response) {
   res.send(tweetsWithUser);
 }
 
-function deleteTweet(req: Request, res: Response) {
+async function deleteTweet(req: Request, res: Response) {
   const { tweetId } = req.params;
+  const handle = req.body.handle;
 
-  const authorization = req.headers.authorization;
-  if (!authorization) {
-    res.status(401).send({ message: "Unauthorized" });
+  const tweet = await Tweet.query("id").eq(tweetId).exec();
+  if (tweet.length === 0) {
+    res.status(404).send({ message: "Tweet not found" });
     return;
   }
-  const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET, async (err, verifiedJwt) => {
-    if (err) {
-      res.send(err.message);
-    } else {
-      if (!verifiedJwt || typeof verifiedJwt === "string") {
-        res.send(401).send({ message: "Unauthorized" });
-        return;
-      }
+  if (tweet[0].handle != handle) {
+    res.status(401).send({ message: "Cannot delete tweets of other users" });
+    return;
+  }
 
-      const handle = verifiedJwt.id.split("@")[0];
-
-      const tweet = await Tweet.query("id").eq(tweetId).exec();
-      if (tweet.length === 0) {
-        res.status(404).send({ message: "Tweet not found" });
-        return;
-      }
-
-      if (tweet[0].handle != handle) {
-        res
-          .status(401)
-          .send({ message: "Cannot delete tweets of other users" });
-        return;
-      }
-
-      await Tweet.delete(tweet[0]);
-      // Delete images of that tweet from S3
-      if (tweet[0].images) {
-        const imageIds = tweet[0].images.split(",");
-        for (let id of imageIds) {
-          await s3.send(
-            new DeleteObjectCommand({
-              Bucket: process.env.S3_BUCKET_NAME,
-              Key: id,
-            })
-          );
-        }
-      }
-      res.send({ message: "Tweet deleted" });
+  await Tweet.delete(tweet[0]);
+  // Delete images of that tweet from S3
+  if (tweet[0].images) {
+    const imageIds = tweet[0].images.split(",");
+    for (let id of imageIds) {
+      await s3.send(
+        new DeleteObjectCommand({
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: id,
+        })
+      );
     }
-  });
+  }
+  res.send({ message: "Tweet deleted" });
 }
 
-function editTweet(req: Request, res: Response) {
+async function editTweet(req: Request, res: Response) {
   const { tweetId } = req.params;
-  const { text } = req.body;
+  const { text, handle } = req.body;
 
-  const authorization = req.headers.authorization;
-  if (!authorization) {
+  if (!handle) {
     res.status(401).send({ message: "Unauthorized" });
     return;
   }
-  const token = authorization.split(" ")[1];
 
-  jwt.verify(token, process.env.JWT_SECRET, async (err, verifiedJwt) => {
-    if (err) {
-      res.send(err.message);
-    } else {
-      if (!verifiedJwt || typeof verifiedJwt === "string") {
-        res.send(401).send({ message: "Unauthorized" });
-        return;
-      }
+  const tweet = await Tweet.query("id").eq(tweetId).exec();
+  if (tweet.length === 0) {
+    res.status(404).send({ message: "Tweet not found" });
+    return;
+  }
 
-      const handle = verifiedJwt.id.split("@")[0];
+  if (tweet[0].handle != handle) {
+    res.status(401).send({ message: "Cannot edit tweets of other users" });
+    return;
+  }
 
-      const tweet = await Tweet.query("id").eq(tweetId).exec();
-      if (tweet.length === 0) {
-        res.status(404).send({ message: "Tweet not found" });
-        return;
-      }
-
-      if (tweet[0].handle != handle) {
-        res.status(401).send({ message: "Cannot edit tweets of other users" });
-        return;
-      }
-
-      tweet[0].text = text;
-      await tweet[0].save();
-      res.send(tweet[0]);
-    }
-  });
+  tweet[0].text = text;
+  await tweet[0].save();
+  res.send(tweet[0]);
 }
 
 export { postTweet, getAllTweets, getPersonalTweets, deleteTweet, editTweet };

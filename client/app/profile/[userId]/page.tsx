@@ -39,6 +39,7 @@ export default function Profile({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
+    if (!data?.token) return;
     fetch(
       `${process.env.PUBLIC_API_URL}/backend/users/profile/${params.userId}`,
       {
@@ -61,20 +62,12 @@ export default function Profile({ params }: { params: { userId: string } }) {
           setFollowers(data.followers!);
           setOwnTweets(data.tweets ?? []);
         });
-      } else {
-        signOut();
-        redirect("/login");
       }
     });
   }, [params.userId, data?.token]);
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (!data || !data.user || !data.user.email || !data.token) {
-    signOut();
-    redirect("/login");
+  if (!data || !data.user || !data.user.email || !data.token || !username) {
+    return "Loading...";
   }
 
   const ownHandle = data.user.email.split("@")[0];

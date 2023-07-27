@@ -271,6 +271,18 @@ function deleteTweet(req: Request, res: Response) {
       }
 
       await Tweet.delete(tweet[0]);
+      // Delete images of that tweet from S3
+      if (tweet[0].images) {
+        const imageIds = tweet[0].images.split(",");
+        for (let id of imageIds) {
+          await s3.send(
+            new DeleteObjectCommand({
+              Bucket: process.env.S3_BUCKET_NAME,
+              Key: id,
+            })
+          );
+        }
+      }
       res.send({ message: "Tweet deleted" });
     }
   });

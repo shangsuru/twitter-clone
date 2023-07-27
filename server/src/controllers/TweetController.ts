@@ -51,6 +51,10 @@ async function postTweet(req: Request, res: Response) {
     return;
   }
 
+  if (text.length > 200) {
+    res.status(400).send({ message: "Text too long" });
+  }
+
   // For each image, upload it to S3
   let keysOfSavedImages: string[] = [];
   for (let i = 0; i < images.length; i++) {
@@ -170,6 +174,10 @@ async function editTweet(req: Request, res: Response) {
   if (!handle) {
     res.status(401).send({ message: "Unauthorized" });
     return;
+  }
+
+  if (text.length > 200) {
+    res.status(400).send({ message: "Text too long" });
   }
 
   const tweet = await Tweet.query("id").eq(tweetId).exec();

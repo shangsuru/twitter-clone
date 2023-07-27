@@ -107,6 +107,16 @@ function updateUser(req: Request, res: Response) {
     return;
   }
 
+  if (
+    username.length > 30 ||
+    bio.length > 160 ||
+    location.length > 30 ||
+    website.length > 30
+  ) {
+    res.status(400).send({ message: "Input too long" });
+    return;
+  }
+
   User.query("handle")
     .eq(handle)
     .exec()

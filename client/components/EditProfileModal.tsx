@@ -105,6 +105,7 @@ export default function EditProfileModal({
           onChange={(e) => {
             setInputName(e.target.value);
           }}
+          maxLength={30}
         />
         <Divider />
         <Input
@@ -116,6 +117,7 @@ export default function EditProfileModal({
           onChange={(e) => {
             setInputBio(e.target.value);
           }}
+          maxLength={160}
         />
         <Divider />
         <Input
@@ -127,6 +129,7 @@ export default function EditProfileModal({
           onChange={(e) => {
             setInputLocation(e.target.value);
           }}
+          maxLength={30}
         />
         <Divider />
         <Input
@@ -138,6 +141,7 @@ export default function EditProfileModal({
           onChange={(e) => {
             setInputWebsite(e.target.value);
           }}
+          maxLength={30}
         />
       </Modal>
     </>

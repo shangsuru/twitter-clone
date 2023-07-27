@@ -58,6 +58,7 @@ export default function TweetCard({
                 <Input.TextArea
                   onChange={(e) => setNewText(e.target.value)}
                   value={newText}
+                  maxLength={200}
                 />
               ) : (
                 savedText

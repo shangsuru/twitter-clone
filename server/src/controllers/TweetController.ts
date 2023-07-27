@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import Tweet from "../models/Tweet";
 import { v4 as uuid } from "uuid";
-import User from "../models/User";
-import Follow from "../models/Follow";
+import Dynamo from "../models/Dynamo";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { imageKeysToPresignedUrl, s3 } from "../utils/s3";
 
@@ -24,7 +22,11 @@ async function addUserInfoAndImageUrls(tweets: any[]) {
       continue;
     }
 
-    const users = await User.query("handle").eq(tweet.handle).exec();
+    const users = await Dynamo.query("type")
+      .eq("USER")
+      .where("handle")
+      .eq(tweet.handle)
+      .exec();
     if (users.length === 0) {
       continue;
     }
@@ -89,7 +91,8 @@ async function postTweet(req: Request, res: Response) {
     }
   }
 
-  const tweet = new Tweet({
+  const tweet = new Dynamo({
+    type: "TWEET",
     id: uuid(),
     handle: handle,
     text,
@@ -102,13 +105,12 @@ async function postTweet(req: Request, res: Response) {
 }
 
 async function getAllTweets(req: Request, res: Response) {
-  const tweets = await Tweet.scan().exec();
+  const tweets = await Dynamo.query("type")
+    .eq("TWEET")
+    .sort("descending")
+    .exec();
 
   let tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
-
-  tweetsWithUser.sort((a, b) => {
-    return b.createdAt - a.createdAt;
-  });
 
   res.send(tweetsWithUser);
 }
@@ -118,22 +120,26 @@ async function getPersonalTweets(req: Request, res: Response) {
   const { userId } = req.params;
 
   // Find all users that this user follows
-  let followed = await Follow.query("follower").eq(userId).exec();
+  let followed = await Dynamo.query("type")
+    .eq("FOLLOW")
+    .where("follower")
+    .eq(userId)
+    .exec();
 
   // Get the tweets of the users that the user follows
   let tweets: any[] = [];
   for (let i = 0; i < followed.length; i++) {
     const user = followed[i];
-    const userTweets = await Tweet.query("handle").eq(user.followed).exec();
+    const userTweets = await Dynamo.query("type")
+      .eq("TWEET")
+      .where("handle")
+      .eq(user.followed)
+      .sort("descending")
+      .exec();
     tweets = tweets.concat(userTweets);
   }
 
   let tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
-
-  tweetsWithUser.sort((a, b) => {
-    return b.createdAt - a.createdAt;
-  });
-
   res.send(tweetsWithUser);
 }
 
@@ -141,7 +147,11 @@ async function deleteTweet(req: Request, res: Response) {
   const { tweetId } = req.params;
   const handle = req.body.handle;
 
-  const tweet = await Tweet.query("id").eq(tweetId).exec();
+  const tweet = await Dynamo.query("type")
+    .eq("TWEET")
+    .where("id")
+    .eq(tweetId)
+    .exec();
   if (tweet.length === 0) {
     res.status(404).send({ message: "Tweet not found" });
     return;
@@ -152,7 +162,7 @@ async function deleteTweet(req: Request, res: Response) {
     return;
   }
 
-  await Tweet.delete(tweet[0]);
+  await Dynamo.delete(tweet[0]);
   // Delete images of that tweet from S3
   if (tweet[0].images) {
     const imageIds = tweet[0].images.split(",");
@@ -181,7 +191,11 @@ async function editTweet(req: Request, res: Response) {
     res.status(400).send({ message: "Text too long" });
   }
 
-  const tweet = await Tweet.query("id").eq(tweetId).exec();
+  const tweet = await Dynamo.query("type")
+    .eq("TWEET")
+    .where("id")
+    .eq(tweetId)
+    .exec();
   if (tweet.length === 0) {
     res.status(404).send({ message: "Tweet not found" });
     return;

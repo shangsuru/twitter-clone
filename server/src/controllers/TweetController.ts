@@ -29,6 +29,43 @@ const config: S3ClientConfig =
 
 const s3: S3Client = new S3Client(config);
 
+async function addUserInfoAndImageUrls(tweets: any[]) {
+  let userDataCache = new Map<string, { image: string; username: string }>();
+  let tweetsWithUser: object[] = [];
+  for (let i = 0; i < tweets.length; i++) {
+    const tweet = tweets[i];
+
+    await imageKeysToPresignedUrl(s3, tweet);
+
+    if (userDataCache.has(tweet.handle) && userDataCache.get(tweet.handle)) {
+      const user = userDataCache.get(tweet.handle);
+      tweetsWithUser.push({
+        ...tweet,
+        image: user!.image,
+        sender: user!.username,
+      });
+      continue;
+    }
+
+    const users = await User.query("handle").eq(tweet.handle).exec();
+    if (users.length === 0) {
+      continue;
+    }
+
+    const user = users[0];
+    userDataCache.set(tweet.handle, {
+      image: user.image,
+      username: user.username,
+    });
+    tweetsWithUser.push({
+      ...tweet,
+      image: user.image,
+      sender: user.username,
+    });
+  }
+  return tweetsWithUser;
+}
+
 async function postTweet(req: Request, res: Response) {
   const { text, images, handle } = req.body;
 
@@ -89,40 +126,7 @@ async function getAllTweets(req: Request, res: Response) {
     return b.createdAt - a.createdAt;
   });
 
-  // For each tweet, get the username and image of its sender
-  let userDataCache = new Map<string, { image: string; username: string }>();
-  let tweetsWithUser: object[] = [];
-  for (let i = 0; i < tweets.length; i++) {
-    const tweet = tweets[i];
-
-    await imageKeysToPresignedUrl(s3, tweet);
-
-    if (userDataCache.has(tweet.handle) && userDataCache.get(tweet.handle)) {
-      const user = userDataCache.get(tweet.handle);
-      tweetsWithUser.push({
-        ...tweet,
-        image: user!.image,
-        sender: user!.username,
-      });
-      continue;
-    }
-
-    const users = await User.query("handle").eq(tweet.handle).exec();
-    if (users.length === 0) {
-      continue;
-    }
-
-    const user = users[0];
-    userDataCache.set(tweet.handle, {
-      image: user.image,
-      username: user.username,
-    });
-    tweetsWithUser.push({
-      ...tweet,
-      image: user.image,
-      sender: user.username,
-    });
-  }
+  let tweetsWithUser: object[] = await addUserInfoAndImageUrls(tweets);
 
   res.send(tweetsWithUser);
 }
@@ -146,40 +150,7 @@ async function getPersonalTweets(req: Request, res: Response) {
     return b.createdAt - a.createdAt;
   });
 
-  let userDataCache = new Map<string, { image: string; username: string }>();
-  let tweetsWithUser: object[] = [];
-  for (let i = 0; i < tweets.length; i++) {
-    const tweet = tweets[i];
-
-    await imageKeysToPresignedUrl(s3, tweet);
-
-    // For each tweet, get the username and image of its sender
-    if (userDataCache.has(tweet.handle) && userDataCache.get(tweet.handle)) {
-      const user = userDataCache.get(tweet.handle);
-      tweetsWithUser.push({
-        ...tweet,
-        image: user!.image,
-        sender: user!.username,
-      });
-      continue;
-    }
-
-    const users = await User.query("handle").eq(tweet.handle).exec();
-    if (users.length === 0) {
-      continue;
-    }
-
-    const user = users[0];
-    userDataCache.set(tweet.handle, {
-      image: user.image,
-      username: user.username,
-    });
-    tweetsWithUser.push({
-      ...tweet,
-      image: user.image,
-      sender: user.username,
-    });
-  }
+  let tweetsWithUser: object[] = await addUserInfoAndImageUrls(tweets);
 
   res.send(tweetsWithUser);
 }

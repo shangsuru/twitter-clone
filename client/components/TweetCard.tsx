@@ -36,8 +36,8 @@ export default function TweetCard({
   const [newText, setNewText] = useState(text);
 
   return (
-    <Link href={`/profile/${handle}`} className="no-style-link">
-      <Card className="card" style={{ margin: 10 }}>
+    <Card className="card" style={{ margin: 10 }}>
+      <Link href={`/profile/${handle}`} className="no-style-link">
         <Card.Meta
           avatar={<Avatar src={image} alt="Avatar" />}
           title={
@@ -64,56 +64,56 @@ export default function TweetCard({
             </div>
           }
         />
-        {editable && (
-          // Edit Icon Button and Delete Icon Button
-          <div id="edit-tweets">
-            <Button
-              size="small"
-              shape="round"
-              onClick={() => {
-                if (edit) {
-                  setSavedText(newText);
-                  fetch(
-                    `${process.env.PUBLIC_API_URL}/backend/tweets/${tweetId}`,
-                    {
-                      method: "PATCH",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${JWT}`,
-                      },
-                      body: JSON.stringify({
-                        text: newText,
-                      }),
-                    }
-                  );
-                }
-                setEdit(!edit);
-              }}
-            >
-              {edit ? <SaveOutlined /> : <EditOutlined />}
-            </Button>
-            <Button
-              size="small"
-              type="primary"
-              shape="round"
-              danger
-              onClick={deleteTweet}
-            >
-              <DeleteOutlined />
-            </Button>
-          </div>
-        )}
+      </Link>
+      {editable && (
+        // Edit Icon Button and Delete Icon Button
+        <div id="edit-tweets">
+          <Button
+            size="small"
+            shape="round"
+            onClick={() => {
+              if (edit) {
+                setSavedText(newText);
+                fetch(
+                  `${process.env.PUBLIC_API_URL}/backend/tweets/${tweetId}`,
+                  {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${JWT}`,
+                    },
+                    body: JSON.stringify({
+                      text: newText,
+                    }),
+                  }
+                );
+              }
+              setEdit(!edit);
+            }}
+          >
+            {edit ? <SaveOutlined /> : <EditOutlined />}
+          </Button>
+          <Button
+            size="small"
+            type="primary"
+            shape="round"
+            danger
+            onClick={deleteTweet}
+          >
+            <DeleteOutlined />
+          </Button>
+        </div>
+      )}
 
-        {images && (
-          <div style={{ marginTop: 60 }}>
-            <Image.PreviewGroup>
-              {images.map((image) => (
-                <Image key={image} src={image} alt="Tweet Image" width={100} />
-              ))}
-            </Image.PreviewGroup>
-          </div>
-        )}
-      </Card>
-    </Link>
+      {images && (
+        <div style={{ marginTop: 60 }}>
+          <Image.PreviewGroup>
+            {images.map((image) => (
+              <Image key={image} src={image} alt="Tweet Image" width={100} />
+            ))}
+          </Image.PreviewGroup>
+        </div>
+      )}
+    </Card>
   );
 }

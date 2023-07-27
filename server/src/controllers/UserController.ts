@@ -1,6 +1,16 @@
 import { Request, Response } from "express";
-import Dynamo from "../models/Dynamo";
 import { imageKeysToPresignedUrl } from "../utils/s3";
+import { addUser, getUsersByHandle, getUsersByHandles } from "../database/user";
+import { getTweetsByUser } from "../database/tweet";
+import {
+  addFollow,
+  follows,
+  getFollowed,
+  getFollowersCount,
+  getFollowersOf,
+  getFollowingCount,
+  getFollows,
+} from "../database/follow";
 
 async function getUser(req: Request, res: Response) {
   const { userId } = req.params;
@@ -12,11 +22,7 @@ async function getUser(req: Request, res: Response) {
   }
 
   // Get user info
-  const users = await Dynamo.query("type")
-    .eq("USER")
-    .where("handle")
-    .eq(userId)
-    .exec();
+  const users = await getUsersByHandle(userId);
   if (users.length === 0) {
     res.status(404).send({ message: "User not found" });
     return;
@@ -24,34 +30,15 @@ async function getUser(req: Request, res: Response) {
   const user = users[0];
 
   // Get the tweets of the user
-  const tweets = await Dynamo.query("type")
-    .eq("TWEET")
-    .where("handle")
-    .eq(userId)
-    .sort("descending")
-    .exec();
+  const tweets = await getTweetsByUser(userId);
 
   for (let tweet of tweets) {
     await imageKeysToPresignedUrl(tweet);
   }
 
   // Compute the number of followers and following
-  const followersCount = (
-    await Dynamo.query("type")
-      .eq("FOLLOW")
-      .where("followed")
-      .eq(userId)
-      .count()
-      .exec()
-  ).count;
-  const followingCount = (
-    await Dynamo.query("type")
-      .eq("FOLLOW")
-      .where("follower")
-      .eq(userId)
-      .count()
-      .exec()
-  ).count;
+  const followersCount = await getFollowersCount(userId);
+  const followingCount = await getFollowingCount(userId);
 
   if (handle === userId) {
     res.send({
@@ -63,17 +50,7 @@ async function getUser(req: Request, res: Response) {
     return;
   }
 
-  // Check if the user (handle) is following the user (userId)
-  const follow = await Dynamo.query("type")
-    .eq("FOLLOW")
-    .where("follower")
-    .eq(handle)
-    .and()
-    .where("followed")
-    .eq(userId)
-    .exec();
-
-  if (follow.length > 0) {
+  if (await follows(handle, userId)) {
     res.send({
       ...user,
       tweets: tweets,
@@ -100,27 +77,15 @@ function createUser(req: Request, res: Response) {
     return;
   }
 
-  Dynamo.query("type")
-    .eq("USER")
-    .where("handle")
-    .eq(handle)
-    .exec()
-    .then((users) => {
-      if (users.length > 0) {
-        res.status(403).send({ message: "User already exists" });
-      } else {
-        const newUser = new Dynamo({
-          type: "USER",
-          handle: handle,
-          username: username,
-          image: image,
-          createdAt: Math.floor(Date.now() / 1000),
-        });
-        newUser.save().then((user) => {
-          res.send(user);
-        });
-      }
-    });
+  getUsersByHandle(handle).then((users) => {
+    if (users.length > 0) {
+      res.status(403).send({ message: "User already exists" });
+    } else {
+      addUser(handle, username, image).then((user) => {
+        res.send(user);
+      });
+    }
+  });
 }
 
 function updateUser(req: Request, res: Response) {
@@ -141,25 +106,20 @@ function updateUser(req: Request, res: Response) {
     return;
   }
 
-  Dynamo.query("type")
-    .eq("USER")
-    .where("handle")
-    .eq(handle)
-    .exec()
-    .then((users) => {
-      if (users.length === 0) {
-        res.status(505).send({ message: "Internal Server Error" });
-      } else {
-        const user = users[0];
-        user.username = username;
-        user.bio = bio;
-        user.location = location;
-        user.website = website;
-        user.save().then((user) => {
-          res.send(user);
-        });
-      }
-    });
+  getUsersByHandle(handle).then((users) => {
+    if (users.length === 0) {
+      res.status(505).send({ message: "Internal Server Error" });
+    } else {
+      const user = users[0];
+      user.username = username;
+      user.bio = bio;
+      user.location = location;
+      user.website = website;
+      user.save().then((user) => {
+        res.send(user);
+      });
+    }
+  });
 }
 
 function followUser(req: Request, res: Response) {
@@ -170,13 +130,7 @@ function followUser(req: Request, res: Response) {
     return;
   }
 
-  const newFollower = new Dynamo({
-    type: "FOLLOW",
-    follower: handle,
-    followed: userId,
-    createdAt: Math.floor(Date.now() / 1000),
-  });
-  newFollower.save().then((follow) => {
+  addFollow(handle, userId).then((follow) => {
     res.send(follow);
   });
 }
@@ -189,67 +143,39 @@ function unfollowUser(req: Request, res: Response) {
     return;
   }
 
-  Dynamo.query("type")
-    .eq("FOLLOW")
-    .where("follower")
-    .eq(handle)
-    .and()
-    .where("followed")
-    .eq(userId)
-    .exec()
-    .then((follow) => {
-      if (follow.length > 0) {
-        follow[0].delete().then(() => {
-          res.send("Unfollowed user");
-        });
-      }
-    });
+  getFollows(handle, userId).then((follow) => {
+    if (follow.length > 0) {
+      follow[0].delete().then(() => {
+        res.send("Unfollowed user");
+      });
+    }
+  });
 }
 
 function getFollowing(req: Request, res: Response) {
-  Dynamo.query("type")
-    .eq("FOLLOW")
-    .where("follower")
-    .eq(req.params.userId)
-    .exec()
-    .then((follows) => {
-      if (follows.length > 0) {
-        const followers = follows.map((follow) => follow.followed);
-        Dynamo.query("type")
-          .eq("USER")
-          .where("handle")
-          .in(followers)
-          .exec()
-          .then((users) => {
-            res.send(users);
-          });
-      } else {
-        res.send([]);
-      }
-    });
+  getFollowed(req.params.userId).then((follows) => {
+    if (follows.length > 0) {
+      const followers = follows.map((follow) => follow.followed);
+      getUsersByHandles(followers).then((users) => {
+        res.send(users);
+      });
+    } else {
+      res.send([]);
+    }
+  });
 }
 
 function getFollowers(req: Request, res: Response) {
-  Dynamo.query("type")
-    .eq("FOLLOW")
-    .where("followed")
-    .eq(req.params.userId)
-    .exec()
-    .then((follows) => {
-      if (follows.length > 0) {
-        const followers = follows.map((follow) => follow.follower);
-        Dynamo.query("type")
-          .eq("USER")
-          .where("handle")
-          .in(followers)
-          .exec()
-          .then((users) => {
-            res.send(users);
-          });
-      } else {
-        res.send([]);
-      }
-    });
+  getFollowersOf(req.params.userId).then((follows) => {
+    if (follows.length > 0) {
+      const followers = follows.map((follow) => follow.follower);
+      getUsersByHandles(followers).then((users) => {
+        res.send(users);
+      });
+    } else {
+      res.send([]);
+    }
+  });
 }
 
 export {

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Tweet from "../models/Tweet";
-import jwt from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import User from "../models/User";
 import Follow from "../models/Follow";
@@ -8,27 +7,27 @@ import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
-  GetObjectCommand,
 } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import type { S3ClientConfig } from "@aws-sdk/client-s3";
+import imageKeysToPresignedUrl from "../utils/presignedUrl";
 
-let s3: S3Client;
-if (process.env.NODE_ENV === "production") {
-  s3 = new S3Client({
-    region: process.env.AWS_REGION,
-    forcePathStyle: true,
-  });
-} else {
-  s3 = new S3Client({
-    region: process.env.AWS_REGION,
-    endpoint: process.env.S3_ENDPOINT,
-    forcePathStyle: true,
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
-  });
-}
+const config: S3ClientConfig =
+  process.env.NODE_ENV === "production"
+    ? {
+        region: process.env.AWS_REGION,
+        forcePathStyle: true,
+      }
+    : {
+        region: process.env.AWS_REGION,
+        endpoint: process.env.S3_ENDPOINT,
+        forcePathStyle: true,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        },
+      };
+
+const s3: S3Client = new S3Client(config);
 
 async function postTweet(req: Request, res: Response) {
   const { text, images, handle } = req.body;
@@ -96,23 +95,7 @@ async function getAllTweets(req: Request, res: Response) {
   for (let i = 0; i < tweets.length; i++) {
     const tweet = tweets[i];
 
-    // Convert image IDs to presigned URLs
-    if (tweet.images) {
-      const imageIds = tweet.images.split(",");
-      const imageUrls = [];
-      for (let id of imageIds) {
-        const url = await getSignedUrl(
-          s3,
-          new GetObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: id,
-          }),
-          { expiresIn: 3600 }
-        );
-        imageUrls.push(url);
-      }
-      tweet.images = imageUrls;
-    }
+    await imageKeysToPresignedUrl(s3, tweet);
 
     if (userDataCache.has(tweet.handle) && userDataCache.get(tweet.handle)) {
       const user = userDataCache.get(tweet.handle);
@@ -168,23 +151,7 @@ async function getPersonalTweets(req: Request, res: Response) {
   for (let i = 0; i < tweets.length; i++) {
     const tweet = tweets[i];
 
-    // Convert image IDs to presigned URLs
-    if (tweet.images) {
-      const imageIds = tweet.images.split(",");
-      const imageUrls = [];
-      for (let id of imageIds) {
-        const url = await getSignedUrl(
-          s3,
-          new GetObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: id,
-          }),
-          { expiresIn: 3600 }
-        );
-        imageUrls.push(url);
-      }
-      tweet.images = imageUrls;
-    }
+    await imageKeysToPresignedUrl(s3, tweet);
 
     // For each tweet, get the username and image of its sender
     if (userDataCache.has(tweet.handle) && userDataCache.get(tweet.handle)) {

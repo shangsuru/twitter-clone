@@ -57,8 +57,8 @@ export default function Profile({ params }: { params: { userId: string } }) {
           if (data.website) setWebsite(data.website);
           setCreatedAt(data.createdAt);
           if (data.followed) setFollowed(data.followed);
-          setFollowing(data.following_count!);
-          setFollowers(data.followers_count!);
+          setFollowing(data.following!);
+          setFollowers(data.followers!);
           setOwnTweets(data.tweets ?? []);
         });
       } else {

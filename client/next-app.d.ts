@@ -29,8 +29,8 @@ declare global {
     website?: string;
     createdAt: number;
     followed?: boolean;
-    following_count?: number;
-    followers_count?: number;
+    following?: number;
+    followers?: number;
     tweets?: TweetData[];
   }
 

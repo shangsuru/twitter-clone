@@ -29,6 +29,29 @@ export default function Follow({ params }: { params: { userId: string } }) {
       });
   }
 
+  const { data, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/login");
+    },
+  });
+
+  useEffect(() => {
+    getFollowingandFollowers();
+  }, [params.userId]);
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  if (!data || !data.user || !data.user.email) {
+    signOut();
+    redirect("/login");
+  }
+
+  const handle = data.user.email.split("@")[0];
+  const image = data.user.image ?? "/user_icon.png";
+
   const items: Tab[] = [
     {
       key: "1",
@@ -57,29 +80,6 @@ export default function Follow({ params }: { params: { userId: string } }) {
       )),
     },
   ];
-
-  const { data, status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect("/login");
-    },
-  });
-
-  useEffect(() => {
-    getFollowingandFollowers();
-  }, [params.userId]);
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  if (!data || !data.user || !data.user.email) {
-    signOut();
-    redirect("/login");
-  }
-
-  const handle = data.user.email.split("@")[0];
-  const image = data.user.image ?? "/user_icon.png";
 
   return (
     <AntdStyle>

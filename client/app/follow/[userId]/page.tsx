@@ -51,21 +51,27 @@ export default function Follow({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
-    fetch(`${process.env.PUBLIC_API_URL}/users/${params.userId}/following`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `${process.env.PUBLIC_API_URL}/backend/users/${params.userId}/following`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setFollowing(data);
       });
 
-    fetch(`${process.env.PUBLIC_API_URL}/users/${params.userId}/followers`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `${process.env.PUBLIC_API_URL}/backend/users/${params.userId}/followers`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setFollowers(data);

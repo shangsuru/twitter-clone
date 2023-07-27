@@ -44,7 +44,7 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
       file.base64 = (await getBase64(file.originFileObj!)) as string;
     }
 
-    fetch(`${process.env.PUBLIC_API_URL}/tweets`, {
+    fetch(`${process.env.PUBLIC_API_URL}/backend/tweets`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

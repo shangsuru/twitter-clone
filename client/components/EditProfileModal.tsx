@@ -40,7 +40,7 @@ export default function EditProfileModal({
   function handleModalOk() {
     setLoading(true);
     website = inputWebsite!.replace("https://", "");
-    fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
+    fetch(`${process.env.PUBLIC_API_URL}/backend/users/profile`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

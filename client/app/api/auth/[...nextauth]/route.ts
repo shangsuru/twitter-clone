@@ -25,7 +25,7 @@ const authOptions: NextAuthOptions = {
         return false;
       }
       const handle = user.email.split("@")[0];
-      await fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
+      await fetch(`${process.env.PUBLIC_API_URL}/backend/users/profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

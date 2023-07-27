@@ -39,11 +39,14 @@ export default function Profile({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
-    fetch(`${process.env.PUBLIC_API_URL}/users/profile/${params.userId}`, {
-      headers: {
-        Authorization: `Bearer ${data?.token}`,
-      },
-    }).then((res) => {
+    fetch(
+      `${process.env.PUBLIC_API_URL}/backend/users/profile/${params.userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${data?.token}`,
+        },
+      }
+    ).then((res) => {
       if (res.ok) {
         res.json().then((data: UserData) => {
           setUsername(data.username);
@@ -156,23 +159,26 @@ export default function Profile({ params }: { params: { userId: string } }) {
               shape="round"
               onClick={() => {
                 if (followed) {
-                  fetch(`${process.env.PUBLIC_API_URL}/users/unfollow`, {
-                    method: "DELETE",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${data.token}`,
-                    },
-                    body: JSON.stringify({
-                      userId: params.userId,
-                    }),
-                  }).then((res) => {
+                  fetch(
+                    `${process.env.PUBLIC_API_URL}/backend/users/unfollow`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${data.token}`,
+                      },
+                      body: JSON.stringify({
+                        userId: params.userId,
+                      }),
+                    }
+                  ).then((res) => {
                     if (res.ok) {
                       setFollowed(!followed);
                       setFollowers(followers - 1);
                     }
                   });
                 } else {
-                  fetch(`${process.env.PUBLIC_API_URL}/users/follow`, {
+                  fetch(`${process.env.PUBLIC_API_URL}/backend/users/follow`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
@@ -212,12 +218,15 @@ export default function Profile({ params }: { params: { userId: string } }) {
             JWT={data.token}
             deleteTweet={() => {
               setOwnTweets(ownTweets.filter((t) => t.id !== tweet.id));
-              fetch(`${process.env.PUBLIC_API_URL}/tweets/${tweet.id}`, {
-                method: "DELETE",
-                headers: {
-                  Authorization: `Bearer ${data.token}`,
-                },
-              });
+              fetch(
+                `${process.env.PUBLIC_API_URL}/backend/tweets/${tweet.id}`,
+                {
+                  method: "DELETE",
+                  headers: {
+                    Authorization: `Bearer ${data.token}`,
+                  },
+                }
+              );
             }}
           />
         ))}

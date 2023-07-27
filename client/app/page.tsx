@@ -15,7 +15,7 @@ export default function Feed() {
   const [following, setFollowing] = useState<TweetData[]>([]);
 
   function fetchGlobalFeed() {
-    fetch(`${process.env.PUBLIC_API_URL}/tweets`, {
+    fetch(`${process.env.PUBLIC_API_URL}/backend/tweets`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -89,7 +89,7 @@ export default function Feed() {
       fetchGlobalFeed();
     } else {
       // Fetch personal feed
-      fetch(`${process.env.PUBLIC_API_URL}/tweets/${handle}`, {
+      fetch(`${process.env.PUBLIC_API_URL}/backend/tweets/${handle}`, {
         headers: {
           "Content-Type": "application/json",
         },

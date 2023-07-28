@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { imageKeysToPresignedUrl } from "../utils/s3";
+import { imageKeysToPresignedUrl } from "../database/images";
 import { addUser, getUsersByHandle, getUsersByHandles } from "../database/user";
 import { getTweetsByUser } from "../database/tweet";
 import {

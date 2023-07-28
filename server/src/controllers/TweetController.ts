@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { imageKeysToPresignedUrl, s3 } from "../utils/s3";
+import {
+  deleteImage,
+  imageKeysToPresignedUrl,
+  uploadImage,
+} from "../database/images";
 import {
   saveTweet,
   getTweets,
@@ -64,30 +68,12 @@ async function postTweet(req: Request, res: Response) {
   let keysOfSavedImages: string[] = [];
   for (let i = 0; i < images.length; i++) {
     try {
-      const image = images[i];
-      const key = Date.now().toString() + image.name.replace(",", "");
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: key,
-          Body: Buffer.from(
-            image.body.replace(/^data:image\/\w+;base64,/, ""),
-            "base64"
-          ),
-          ContentEncoding: "base64",
-          ContentType: "image/jpeg",
-        })
-      );
+      const key = await uploadImage(images[i]);
       keysOfSavedImages.push(key);
     } catch (err) {
       // On error, clean up all uploaded images so far
       for (let key of keysOfSavedImages) {
-        await s3.send(
-          new DeleteObjectCommand({
-            Bucket: process.env.S3_BUCKET_NAME,
-            Key: key,
-          })
-        );
+        await deleteImage(key);
       }
       res.status(500).send({ message: "Error uploading images" });
       return;
@@ -142,12 +128,7 @@ async function deleteTweet(req: Request, res: Response) {
   if (tweet[0].images) {
     const imageIds = tweet[0].images.split(",");
     for (let id of imageIds) {
-      await s3.send(
-        new DeleteObjectCommand({
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: id,
-        })
-      );
+      await deleteImage(id);
     }
   }
   res.send({ message: "Tweet deleted" });

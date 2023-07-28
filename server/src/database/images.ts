@@ -1,4 +1,9 @@
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -39,4 +44,31 @@ async function imageKeysToPresignedUrl(tweet: any) {
   }
 }
 
-export { imageKeysToPresignedUrl, s3 };
+async function uploadImage(image: any) {
+  const key = Date.now().toString() + image.name.replace(",", "");
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: key,
+      Body: Buffer.from(
+        image.body.replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      ),
+      ContentEncoding: "base64",
+      ContentType: "image/jpeg",
+    })
+  );
+
+  return key;
+}
+
+async function deleteImage(key: string) {
+  s3.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: key,
+    })
+  );
+}
+
+export { imageKeysToPresignedUrl, uploadImage, deleteImage };

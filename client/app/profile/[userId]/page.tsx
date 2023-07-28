@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Divider, Typography, Image, Button } from "antd";
 import {
@@ -16,6 +16,7 @@ import { timeToDate } from "@/utils/utils";
 import Header from "@/components/Header";
 import { AntdStyle } from "../../AntdStyle";
 import api from "@/utils/api";
+import { sign } from "crypto";
 
 const { Title, Text } = Typography;
 
@@ -95,8 +96,13 @@ export default function Profile({ params }: { params: { userId: string } }) {
     getUserInfo();
   }, [params.userId, data?.token]);
 
-  if (!data || !data.user || !data.user.email || !data.token || !username) {
+  if (status == "loading") {
     return "Loading...";
+  }
+
+  if (!data || !data.user || !data.user.email || !data.token) {
+    signOut().then(() => redirect("/login"));
+    return;
   }
 
   const ownHandle = data.user.email.split("@")[0];

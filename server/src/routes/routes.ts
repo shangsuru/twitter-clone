@@ -17,16 +17,16 @@ import {
 } from "../controllers/TweetController";
 
 export default function routes(app: Express) {
-  app.post("/tweets", postTweet);
-  app.get("/tweets", getAllTweets);
-  app.get("/tweets/:userId", getPersonalTweets);
-  app.delete("/tweets/:tweetId", deleteTweet);
-  app.patch("/tweets/:tweetId", editTweet);
-  app.post("/users/follow", followUser);
-  app.delete("/users/unfollow", unfollowUser);
-  app.get("/users/:userId/following", getFollowing);
-  app.get("/users/:userId/followers", getFollowers);
-  app.get("/users/profile/:userId", getUser);
-  app.patch("/users/profile", updateUser);
-  app.post("/users/profile", createUser);
+  app.post("/backend/tweets", postTweet);
+  app.get("/backend/tweets", getAllTweets);
+  app.get("/backend/tweets/:userId", getPersonalTweets);
+  app.delete("/backend/tweets/:tweetId", deleteTweet);
+  app.patch("/backend/tweets/:tweetId", editTweet);
+  app.post("/backend/users/follow", followUser);
+  app.delete("/backend/users/unfollow", unfollowUser);
+  app.get("/backend/users/:userId/following", getFollowing);
+  app.get("/backend/users/:userId/followers", getFollowers);
+  app.get("/backend/users/profile/:userId", getUser);
+  app.patch("/backend/users/profile", updateUser);
+  app.post("/backend/users/profile", createUser);
 }

@@ -1,4 +1,11 @@
 import type { DefaultSession } from "next-auth";
+import type { UploadFile } from "antd/es/upload/interface";
+
+declare module "antd/es/upload/interface" {
+  interface UploadFile<T = any> {
+    base64?: string;
+  }
+}
 
 declare module "next-auth/jwt" {
   interface JWT {
@@ -20,9 +27,11 @@ declare global {
     bio: string;
     location?: string;
     website?: string;
-    createdAt?: number;
-    following_count?: number;
-    followers_count?: number;
+    createdAt: number;
+    followed?: boolean;
+    following?: number;
+    followers?: number;
+    tweets?: TweetData[];
   }
 
   interface TweetData {
@@ -32,6 +41,7 @@ declare global {
     handle: string;
     text: string;
     createdAt: number;
+    images: string[];
   }
 
   interface LoginDataProps {

@@ -14,9 +14,6 @@ const throwIfNot = function (obj, prop, msg) {
   "NEXTAUTH_SECRET",
   "NEXT_PUBLIC_JWT_SECRET_KEY",
   "NEXTAUTH_URL",
-  "AWS_ACCESS_KEY_ID",
-  "AWS_SECRET_ACCESS_KEY",
-  "AWS_REGION",
   "PUBLIC_API_URL",
 ].forEach((v) => {
   throwIfNot(process.env, v);

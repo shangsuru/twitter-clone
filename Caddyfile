@@ -1,0 +1,7 @@
+henryhelm.intern.aws.prd.demodesu.com {
+  handle /backend/* {
+    reverse_proxy http://localhost:4000
+  }
+
+  reverse_proxy localhost:3000
+}

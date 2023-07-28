@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
+import api from "@/utils/api";
 
 function signToken(email: string) {
   const token = jwt.sign(
@@ -25,16 +26,10 @@ const authOptions: NextAuthOptions = {
         return false;
       }
       const handle = user.email.split("@")[0];
-      await fetch(`${process.env.PUBLIC_API_URL}/users/profile`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          handle: handle,
-          username: user.name,
-          image: user.image,
-        }),
+      await api("users/profile", "POST", {
+        handle: handle,
+        username: user.name,
+        image: user.image,
       });
       return true;
     },

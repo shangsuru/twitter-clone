@@ -9,20 +9,25 @@ import TweetCard from "@/components/TweetCard";
 import { signOut, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import Header from "@/components/Header";
+import api from "@/utils/api";
 
 export default function Feed() {
   const [allTweets, setAllTweets] = useState<TweetData[]>([]);
   const [following, setFollowing] = useState<TweetData[]>([]);
 
-  function fetchGlobalFeed() {
-    fetch(`${process.env.PUBLIC_API_URL}/tweets`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+  function getGlobalFeed() {
+    api("tweets", "GET")
       .then((res) => res.json())
       .then((data) => {
         setAllTweets(data);
+      });
+  }
+
+  function getPersonalFeed() {
+    api(`tweets/${handle}`, "GET")
+      .then((res) => res.json())
+      .then((data) => {
+        setFollowing(data);
       });
   }
 
@@ -34,7 +39,7 @@ export default function Feed() {
   });
 
   useEffect(() => {
-    fetchGlobalFeed();
+    getGlobalFeed();
   }, []);
 
   if (status === "loading") {
@@ -59,6 +64,7 @@ export default function Feed() {
           text={tweet.text}
           image={tweet.image}
           createdAt={tweet.createdAt}
+          images={tweet.images}
         />
       )),
     },
@@ -74,6 +80,7 @@ export default function Feed() {
           text={tweet.text}
           image={tweet.image}
           createdAt={tweet.createdAt}
+          images={tweet.images}
         />
       )),
     },
@@ -84,18 +91,9 @@ export default function Feed() {
 
   function onTabChange(key: string) {
     if (key === "1") {
-      fetchGlobalFeed();
+      getGlobalFeed();
     } else {
-      // Fetch personal feed
-      fetch(`${process.env.PUBLIC_API_URL}/tweets/${handle}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setFollowing(data);
-        });
+      getPersonalFeed();
     }
   }
 

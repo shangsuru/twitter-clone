@@ -15,30 +15,10 @@ import EditProfileModal from "@/components/EditProfileModal";
 import { timeToDate } from "@/utils/utils";
 import Header from "@/components/Header";
 import { AntdStyle } from "../../AntdStyle";
+import api from "@/utils/api";
+import { sign } from "crypto";
 
 const { Title, Text } = Typography;
-
-type TweetData = {
-  id: string;
-  sender: string;
-  handle: string;
-  text: string;
-  createdAt: number;
-};
-
-type UserData = {
-  createdAt: number;
-  handle: string;
-  username: string;
-  image: string;
-  bio?: string;
-  location?: string;
-  website?: string;
-  followed?: boolean;
-  following?: number;
-  followers?: number;
-  tweets?: TweetData[];
-};
 
 export default function Profile({ params }: { params: { userId: string } }) {
   const [username, setUsername] = useState("");
@@ -53,6 +33,57 @@ export default function Profile({ params }: { params: { userId: string } }) {
   const [followers, setFollowers] = useState(0);
   const [ownTweets, setOwnTweets] = useState<TweetData[]>([]);
 
+  function getUserInfo() {
+    api(`users/profile/${params.userId}`, "GET", {}, data?.token).then(
+      (res) => {
+        if (res.ok) {
+          res.json().then((data: UserData) => {
+            setUsername(data.username);
+            setImage(data.image);
+            setHandle(data.handle);
+            if (data.bio) setBio(data.bio);
+            if (data.location) setLocation(data.location);
+            if (data.website) setWebsite(data.website);
+            setCreatedAt(data.createdAt);
+            if (data.followed) setFollowed(data.followed);
+            setFollowing(data.following!);
+            setFollowers(data.followers!);
+            setOwnTweets(data.tweets ?? []);
+          });
+        }
+      }
+    );
+  }
+
+  function follow() {
+    api("users/follow", "POST", { userId: params.userId }, data?.token).then(
+      (res) => {
+        if (res.ok) {
+          setFollowed(!followed);
+          setFollowers(followers + 1);
+        }
+      }
+    );
+  }
+
+  function unfollow() {
+    api(
+      "users/unfollow",
+      "DELETE",
+      { userId: params.userId },
+      data?.token
+    ).then((res) => {
+      if (res.ok) {
+        setFollowed(!followed);
+        setFollowers(followers - 1);
+      }
+    });
+  }
+
+  function deleteTweet(tweet: TweetData) {
+    api(`tweets/${tweet.id}`, "DELETE", {}, data?.token);
+  }
+
   const { data, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -61,39 +92,17 @@ export default function Profile({ params }: { params: { userId: string } }) {
   });
 
   useEffect(() => {
-    fetch(`${process.env.PUBLIC_API_URL}/users/profile/${params.userId}`, {
-      headers: {
-        Authorization: `Bearer ${data?.token}`,
-      },
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((data: UserData) => {
-          setUsername(data.username);
-          setImage(data.image);
-          setHandle(data.handle);
-          if (data.bio) setBio(data.bio);
-          if (data.location) setLocation(data.location);
-          if (data.website) setWebsite(data.website);
-          setCreatedAt(data.createdAt);
-          if (data.followed) setFollowed(data.followed);
-          setFollowing(data.following!);
-          setFollowers(data.followers!);
-          setOwnTweets(data.tweets ?? []);
-        });
-      } else {
-        signOut();
-        redirect("/login");
-      }
-    });
+    if (!data?.token) return;
+    getUserInfo();
   }, [params.userId, data?.token]);
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
+  if (status == "loading") {
+    return "Loading...";
   }
 
   if (!data || !data.user || !data.user.email || !data.token) {
-    signOut();
-    redirect("/login");
+    signOut().then(() => redirect("/login"));
+    return;
   }
 
   const ownHandle = data.user.email.split("@")[0];
@@ -146,12 +155,12 @@ export default function Profile({ params }: { params: { userId: string } }) {
           <Image
             id="profile-image"
             preview={false}
-            src={image}
+            src={params.userId === ownHandle ? ownImage : image}
             alt="Profile Image"
           />
           <br />
 
-          {params.userId == ownHandle && username && data.token && (
+          {params.userId === ownHandle && username && data.token && (
             <EditProfileModal
               image={ownImage}
               username={username}
@@ -178,37 +187,9 @@ export default function Profile({ params }: { params: { userId: string } }) {
               shape="round"
               onClick={() => {
                 if (followed) {
-                  fetch(`${process.env.PUBLIC_API_URL}/users/unfollow`, {
-                    method: "DELETE",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${data.token}`,
-                    },
-                    body: JSON.stringify({
-                      userId: params.userId,
-                    }),
-                  }).then((res) => {
-                    if (res.ok) {
-                      setFollowed(!followed);
-                      setFollowers(followers - 1);
-                    }
-                  });
+                  unfollow();
                 } else {
-                  fetch(`${process.env.PUBLIC_API_URL}/users/follow`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${data.token}`,
-                    },
-                    body: JSON.stringify({
-                      userId: params.userId,
-                    }),
-                  }).then((res) => {
-                    if (res.ok) {
-                      setFollowed(!followed);
-                      setFollowers(followers + 1);
-                    }
-                  });
+                  follow();
                 }
               }}
             >
@@ -223,22 +204,18 @@ export default function Profile({ params }: { params: { userId: string } }) {
         {ownTweets.map((tweet) => (
           <TweetCard
             tweetId={tweet.id}
-            editable={params.userId == ownHandle}
+            editable={params.userId === ownHandle}
             key={tweet.id}
             sender={username}
             handle={handle}
             image={image}
             text={tweet.text}
             createdAt={tweet.createdAt}
+            images={tweet.images}
             JWT={data.token}
             deleteTweet={() => {
               setOwnTweets(ownTweets.filter((t) => t.id !== tweet.id));
-              fetch(`${process.env.PUBLIC_API_URL}/tweets/${tweet.id}`, {
-                method: "DELETE",
-                headers: {
-                  Authorization: `Bearer ${data.token}`,
-                },
-              });
+              deleteTweet(tweet);
             }}
           />
         ))}

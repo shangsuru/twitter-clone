@@ -1,0 +1,29 @@
+version: "3"
+services:
+  dynamo:
+    image: amazon/dynamodb-local
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath .
+    ports:
+      - "8000:8000"
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "${FORWARD_MINIO_PORT:-9000}:9000"
+      - "${FORWARD_MINIO_CONSOLE_PORT:-9090}:9090"
+    environment:
+      MINIO_ROOT_USER: "root"
+      MINIO_ROOT_PASSWORD: "password"
+    volumes:
+      - "minio:/data/minio"
+    command: minio server /data/minio --console-address ":9090"
+
+  create_buckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: /bin/sh -c "sleep 10; /usr/bin/mc config host rm s3; /usr/bin/mc config host add --quiet --api s3v4 s3 http://minio:9000 root password; /usr/bin/mc mb --quiet s3/images; /usr/bin/mc policy set public s3/images; exit 0;"
+
+volumes:
+  minio:
+    driver: local

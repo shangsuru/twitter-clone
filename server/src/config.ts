@@ -42,6 +42,7 @@ const throwIfNot = function <T, K extends keyof T>(
   "S3_ENDPOINT",
   "S3_BUCKET_NAME",
   "NODE_ENV",
+  "DYNAMODB_ENDPOINT",
 ].forEach((v) => {
   throwIfNot(process.env, v);
 });
@@ -55,6 +56,7 @@ export interface IProcessEnv {
   S3_ENDPOINT: string;
   S3_BUCKET_NAME: string;
   NODE_ENV: "development" | "production";
+  DYNAMODB_ENDPOINT: string;
 }
 
 declare global {

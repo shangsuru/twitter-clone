@@ -15,7 +15,7 @@ app.use(cors({ origin: process.env.FRONTEND_URL }));
 auth(app);
 
 if (process.env.NODE_ENV === "development") {
-  dynamoose.aws.ddb.local("http://localhost:8000");
+  dynamoose.aws.ddb.local(process.env.DYNAMODB_ENDPOINT);
 } else {
   const ddb = new dynamoose.aws.ddb.DynamoDB({
     region: process.env.AWS_REGION,

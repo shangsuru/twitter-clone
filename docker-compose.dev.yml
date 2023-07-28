@@ -1,6 +1,6 @@
 version: "3"
 services:
-  local-dynamo:
+  dynamo:
     image: amazon/dynamodb-local
     command: -jar DynamoDBLocal.jar -sharedDb -dbPath .
     ports:
@@ -23,6 +23,7 @@ services:
     depends_on:
       - minio
     entrypoint: /bin/sh -c "sleep 10; /usr/bin/mc config host rm s3; /usr/bin/mc config host add --quiet --api s3v4 s3 http://minio:9000 root password; /usr/bin/mc mb --quiet s3/images; /usr/bin/mc policy set public s3/images; exit 0;"
+
 volumes:
   minio:
     driver: local

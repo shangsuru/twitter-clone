@@ -3,6 +3,7 @@ import { resolve } from "path";
 
 switch (process.env.NODE_ENV) {
   case "development":
+  case "test":
     configDotenv({ path: resolve(__dirname, "../.env.local") });
     break;
   case "production":
@@ -55,7 +56,7 @@ export interface IProcessEnv {
   AWS_REGION: string;
   S3_ENDPOINT: string;
   S3_BUCKET_NAME: string;
-  NODE_ENV: "development" | "production";
+  NODE_ENV: "development" | "production" | "test";
   DYNAMODB_ENDPOINT: string;
 }
 

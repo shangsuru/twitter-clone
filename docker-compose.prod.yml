@@ -1,20 +1,23 @@
 version: "3"
 services:
-  web:
+  nginx:
+    depends_on:
+      - frontend
+      - backend
+    build:
+      context: ./nginx
+    ports:
+      - "3000:8080"
+  frontend:
     depends_on:
       - backend
     build:
       context: ./client
-      target: runner
-    ports:
-      - "3000:3000"
     environment:
       NODE_ENV: production
 
   backend:
     build:
       context: ./server
-    ports:
-      - "4000:4000"
     environment:
       NODE_ENV: production

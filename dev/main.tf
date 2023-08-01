@@ -39,10 +39,10 @@ module "vpc" {
   public_subnets = ["10.0.0.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
-module "security-group" {
+module "security-group-alb" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "4.17.1"
-  name    = "${var.resource_prefix}-security-group_ecs_task"
+  name    = "${var.resource_prefix}-security-group_alb"
   vpc_id  = module.vpc.vpc_id
   ingress_cidr_blocks = [
     "210.253.197.196/32",
@@ -58,6 +58,17 @@ module "security-group" {
   ingress_rules      = ["https-443-tcp", "http-80-tcp"]
   egress_cidr_blocks = ["0.0.0.0/0"]
   egress_rules       = ["all-all"]
+}
+
+module "security-group-ecs-task" {
+  source                                = "terraform-aws-modules/security-group/aws"
+  version                               = "4.17.1"
+  name                                  = "${var.resource_prefix}-security-group_ecs_task"
+  vpc_id                                = module.vpc.vpc_id
+  ingress_with_source_security_group_id = [module.security-group-alb.security_group_id]
+  ingress_rules                         = ["http-80-tcp"]
+  egress_cidr_blocks                    = ["0.0.0.0/0"]
+  egress_rules                          = ["all-all"]
 }
 
 resource "aws_cloudwatch_log_group" "cloudwatch_log_group_web_app" {
@@ -105,7 +116,7 @@ resource "aws_ecs_service" "ecs_service_web_app" {
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = module.vpc.public_subnets
-    security_groups  = [module.security-group.security_group_id]
+    security_groups  = [module.security-group-ecs-task.security_group_id]
     assign_public_ip = true
   }
 }

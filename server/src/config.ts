@@ -34,7 +34,15 @@ const throwIfNot = function <T, K extends keyof T>(
   }
 };
 
-[
+const ENV_PRODUCTION = [
+  "JWT_SECRET",
+  "FRONTEND_URL",
+  "AWS_REGION",
+  "S3_BUCKET_NAME",
+  "NODE_ENV",
+];
+
+const ENV_DEV = [
   "JWT_SECRET",
   "FRONTEND_URL",
   "AWS_ACCESS_KEY_ID",
@@ -44,9 +52,20 @@ const throwIfNot = function <T, K extends keyof T>(
   "S3_BUCKET_NAME",
   "NODE_ENV",
   "DYNAMODB_ENDPOINT",
-].forEach((v) => {
-  throwIfNot(process.env, v);
-});
+];
+
+switch (process.env.NODE_ENV) {
+  case "development":
+    ENV_DEV.forEach((v) => {
+      throwIfNot(process.env, v);
+    });
+    break;
+  case "production":
+    ENV_PRODUCTION.forEach((v) => {
+      throwIfNot(process.env, v);
+    });
+    break;
+}
 
 export interface IProcessEnv {
   JWT_SECRET: string;

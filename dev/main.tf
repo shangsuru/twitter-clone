@@ -152,15 +152,34 @@ module "alb" {
     }
   ]
 
-  http_tcp_listeners = [
+  https_listeners = [
     {
-      port               = "80"
-      protocol           = "HTTP"
+      port               = "443"
+      protocol           = "HTTPS"
+      certificate_arn    = module.acm.acm_certificate_arn
       target_group_index = 0
     }
   ]
 }
 
-output "alb_dns_name" {
-  value = module.alb.lb_dns_name
+resource "aws_route53_record" "alb_alias" {
+  zone_id = var.zone_id
+  name    = var.record_name
+  type    = "A"
+
+  alias {
+    name                   = module.alb.lb_dns_name
+    zone_id                = module.alb.lb_zone_id
+    evaluate_target_health = false
+  }
+}
+
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 4.0"
+
+  domain_name = "${var.record_name}.intern.aws.prd.demodesu.com"
+  zone_id     = var.zone_id
+
+  wait_for_validation = true
 }

@@ -1,0 +1,11 @@
+# Local .terraform directories
+**/.terraform/*
+
+# Dependency lock file
+*.terraform.lock.hcl
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+.DS_Store

@@ -28,5 +28,6 @@ RUN npm run build
 
 WORKDIR /
 COPY ./start.sh ./start.sh
+EXPOSE 80
 
 CMD [ "sh", "start.sh" ]

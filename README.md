@@ -2,13 +2,14 @@ This is a Twitter clone implemented in Typescript!
 
 # Setup
 
-For local development, run `docker-compose -f docker-compose.dev.yml up` to start minio (for S3) and local-dynamodb.
+For local development, run `docker-compose -f docker-compose.yml up` to start minio (for S3) and local-dynamodb.
 Start the server with `npm run build; NODE_ENV=development npm run start`
 Start the client with `npm run dev`
 
 Make sure to add the following environment variables:
 
 - .env file for client:
+
 ```
 GOOGLE_ID=<secret>
 GOOGLE_SECRET=<secret>
@@ -19,6 +20,7 @@ PUBLIC_API_URL=http://localhost:4000
 ```
 
 - .env.local for backend:
+
 ```
 JWT_SECRET=secret
 AWS_ACCESS_KEY_ID=root

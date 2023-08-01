@@ -61,14 +61,21 @@ module "security-group-alb" {
 }
 
 module "security-group-ecs-task" {
-  source                                = "terraform-aws-modules/security-group/aws"
-  version                               = "4.17.1"
-  name                                  = "${var.resource_prefix}-security-group_ecs_task"
-  vpc_id                                = module.vpc.vpc_id
-  ingress_with_source_security_group_id = [module.security-group-alb.security_group_id]
-  ingress_rules                         = ["http-80-tcp"]
-  egress_cidr_blocks                    = ["0.0.0.0/0"]
-  egress_rules                          = ["all-all"]
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "4.17.1"
+  name    = "${var.resource_prefix}-security-group_ecs_task"
+  vpc_id  = module.vpc.vpc_id
+  /*computed_ingress_with_source_security_group_id = [{
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    description       = "Allow inbound traffic from ALB"
+    security_group_id = module.security-group-alb.security_group_id
+  }]*/
+  ingress_cidr_blocks = ["0.0.0.0/0"] // TODO: Change to ALB SG
+  ingress_rules       = ["http-80-tcp"]
+  egress_cidr_blocks  = ["0.0.0.0/0"]
+  egress_rules        = ["all-all"]
 }
 
 resource "aws_cloudwatch_log_group" "cloudwatch_log_group_web_app" {
@@ -112,11 +119,48 @@ resource "aws_ecs_service" "ecs_service_web_app" {
   name            = "${var.resource_prefix}-ecs-service"
   cluster         = aws_ecs_cluster.ecs_cluster_web_app.id
   task_definition = aws_ecs_task_definition.ecs_task_definition_web_app.arn
-  desired_count   = 1
+  desired_count   = 1 // TODO: change this to 2
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = module.vpc.public_subnets
     security_groups  = [module.security-group-ecs-task.security_group_id]
     assign_public_ip = true
   }
+  load_balancer {
+    target_group_arn = module.alb.target_group_arns[0]
+    container_name   = "web-app"
+    container_port   = 80
+  }
+}
+
+module "alb" {
+  source  = "terraform-aws-modules/alb/aws"
+  version = "8.7.0"
+  name    = "${var.resource_prefix}-alb"
+  vpc_id  = module.vpc.vpc_id
+  security_groups = [
+    module.security-group-alb.security_group_id,
+  ]
+  load_balancer_type = "application"
+  subnets            = module.vpc.public_subnets
+
+  target_groups = [
+    {
+      backend_protocol = "HTTP"
+      backend_port     = 80
+      target_type      = "ip"
+    }
+  ]
+
+  http_tcp_listeners = [
+    {
+      port               = "80"
+      protocol           = "HTTP"
+      target_group_index = 0
+    }
+  ]
+}
+
+output "alb_dns_name" {
+  value = module.alb.lb_dns_name
 }

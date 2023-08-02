@@ -8,6 +8,7 @@ on:
 
 permissions:
   id-token: write
+  contents: read
 
 jobs:
   terraform-apply:
@@ -19,8 +20,6 @@ jobs:
       # Checkout the repository to the GitHub Actions runner
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
       - name: Setup Terraform

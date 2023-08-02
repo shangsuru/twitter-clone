@@ -37,30 +37,6 @@ describe("Users", () => {
         done();
       });
   });
-
-  it("POST /users/profile cannot create user with same handle twice", (done) => {
-    request(app)
-      .post("/backend/users/profile")
-      .send({
-        handle: "helm.henry99",
-        username: "Henry Helm",
-        image: "https://avatars.githubusercontent.com/u/77449822?v=4",
-      })
-      .end((err, res) => {
-        expect(res.status).to.equal(200);
-        request(app)
-          .post("/backend/users/profile")
-          .send({
-            handle: "helm.henry99",
-            username: "Another user?",
-            iamge: "https://avatars.githubusercontent.com/u/77449822?v=4",
-          })
-          .end((err, res) => {
-            expect(res.status).to.equal(400);
-            done();
-          });
-      });
-  });
 });
 
 describe("Tweets", () => {

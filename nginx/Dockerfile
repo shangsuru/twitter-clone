@@ -23,14 +23,14 @@ WORKDIR /client
 COPY ./client/package*.json ./
 RUN npm i 
 COPY ./client/ ./
-RUN npm run build
+RUN npm run build --prod
 
 
 WORKDIR /server
 COPY ./server/package*.json ./
 RUN npm i
 COPY ./server/ ./
-RUN npm run build
+RUN npm run build --prod
 
 WORKDIR /
 COPY ./start.sh ./start.sh

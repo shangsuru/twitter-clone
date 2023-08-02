@@ -65,17 +65,14 @@ module "security-group-ecs-task" {
   version = "4.17.1"
   name    = "${var.resource_prefix}-security-group_ecs_task"
   vpc_id  = module.vpc.vpc_id
-  /*computed_ingress_with_source_security_group_id = [{
-    from_port         = 80
-    to_port           = 80
-    protocol          = "tcp"
-    description       = "Allow inbound traffic from ALB"
-    security_group_id = module.security-group-alb.security_group_id
-  }]*/
-  ingress_cidr_blocks = ["0.0.0.0/0"] // TODO: Change to ALB SG
-  ingress_rules       = ["http-80-tcp"]
-  egress_cidr_blocks  = ["0.0.0.0/0"]
-  egress_rules        = ["all-all"]
+  ingress_with_source_security_group_id = [
+    {
+      rule                     = "http-80-tcp"
+      source_security_group_id = module.security-group-alb.security_group_id
+    }
+  ]
+  egress_cidr_blocks = ["0.0.0.0/0"]
+  egress_rules       = ["all-all"]
 }
 
 resource "aws_cloudwatch_log_group" "cloudwatch_log_group_web_app" {

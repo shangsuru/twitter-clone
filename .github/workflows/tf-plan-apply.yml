@@ -1,0 +1,41 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+      - 23-terraform # TODO: just for testing, remove later
+
+permissions:
+  id-token: write
+
+jobs:
+  terraform-apply:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Get AWS credentials
+      - name: AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ap-northeast-1
+          role-to-assume: arn:aws:iam::741641693274:role/intern-devops-terraform
+          role-duration-seconds: 1200
+
+      # Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -var="image_tag=$(git rev-parse HEAD)"

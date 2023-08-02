@@ -101,6 +101,12 @@ resource "aws_ecs_task_definition" "ecs_task_definition_web_app" {
             "awslogs-stream-prefix" : "ecs"
           }
         }
+        "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::intern-henryhelm/.env",
+                    "type": "s3"
+                }
+            ],
       }
     ]
   )

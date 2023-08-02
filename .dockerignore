@@ -1,0 +1,9 @@
+client/.env
+client/.production
+client/.local
+
+server/.env
+server/.env.local
+server/.env.production
+
+nginx/.env

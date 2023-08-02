@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import {
   deleteImage,
   imageKeysToPresignedUrl,

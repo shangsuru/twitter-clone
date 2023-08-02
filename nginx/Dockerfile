@@ -28,7 +28,7 @@ RUN npm run build
 
 WORKDIR /server
 COPY ./server/package*.json ./
-RUN npm i
+RUN NODE_ENV=development npm i
 COPY ./server/ ./
 RUN npm run build
 

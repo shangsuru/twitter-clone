@@ -152,6 +152,16 @@ module "alb" {
       backend_protocol = "HTTP"
       backend_port     = 80
       target_type      = "ip"
+      health_check = {
+        enabled             = true
+        interval            = 30
+        path                = "/backend/health"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 6
+        matcher             = "200"
+      }
     }
   ]
 
@@ -163,6 +173,7 @@ module "alb" {
       target_group_index = 0
     }
   ]
+
 }
 
 resource "aws_route53_record" "alb_alias" {

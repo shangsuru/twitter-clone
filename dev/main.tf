@@ -116,7 +116,7 @@ resource "aws_ecs_service" "ecs_service_web_app" {
   name            = "${var.resource_prefix}-ecs-service"
   cluster         = aws_ecs_cluster.ecs_cluster_web_app.id
   task_definition = aws_ecs_task_definition.ecs_task_definition_web_app.arn
-  desired_count   = 1 // TODO: change this to 2
+  desired_count   = 2
   launch_type     = "FARGATE"
   network_configuration {
     subnets          = module.vpc.public_subnets

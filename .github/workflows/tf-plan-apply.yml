@@ -39,4 +39,4 @@ jobs:
 
       # Terraform Apply
       - name: Terraform Apply
-        run: terraform -chdir=dev apply -var="image_tag=$(git rev-parse HEAD)"
+        run: terraform -chdir=dev apply -auto-approve -var="image_tag=$(git rev-parse HEAD)"

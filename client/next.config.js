@@ -8,16 +8,18 @@ const throwIfNot = function (obj, prop, msg) {
   }
 };
 
-[
-  "GOOGLE_ID",
-  "GOOGLE_SECRET",
-  "NEXTAUTH_SECRET",
-  "NEXT_PUBLIC_JWT_SECRET_KEY",
-  "NEXTAUTH_URL",
-  "PUBLIC_API_URL",
-].forEach((v) => {
-  throwIfNot(process.env, v);
-});
+if (process.env.NODE_ENV === "development") {
+  [
+    "GOOGLE_ID",
+    "GOOGLE_SECRET",
+    "NEXTAUTH_SECRET",
+    "NEXT_PUBLIC_JWT_SECRET_KEY",
+    "NEXTAUTH_URL",
+    "PUBLIC_API_URL",
+  ].forEach((v) => {
+    throwIfNot(process.env, v);
+  });
+}
 
 const nextConfig = {
   reactStrictMode: true,

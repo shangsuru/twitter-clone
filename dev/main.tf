@@ -19,9 +19,9 @@ resource "null_resource" "docker_packaging" {
 
   triggers = {
     # only when files in client,server or nginx folder change, re-run this provisioner
-    "change_in_client" = sha1(join("", [for f in fileset("./client", "**"): filesha1(f)]))
-    "change_in_server" = sha1(join("", [for f in fileset("./server", "**"): filesha1(f)]))
-    "change_in_nginx" = sha1(join("", [for f in fileset("./nginx", "**"): filesha1(f)]))
+    "change_in_client" = sha1(join("", [for f in fileset("./client", "**") : filesha1(f)]))
+    "change_in_server" = sha1(join("", [for f in fileset("./server", "**") : filesha1(f)]))
+    "change_in_nginx"  = sha1(join("", [for f in fileset("./nginx", "**") : filesha1(f)]))
   }
 
   depends_on = [
@@ -110,30 +110,30 @@ resource "aws_ecs_task_definition" "ecs_task_definition_web_app" {
             "type" : "s3"
           }
         ],
-        "environment": [
+        "environment" : [
           {
-            "name": "AWS_REGION",
-            "value": "${data.aws_region.current.name}"
+            "name" : "AWS_REGION",
+            "value" : "${data.aws_region.current.name}"
           },
           {
-            "name": "FRONTEND_URL",
-            "value": "${var.url}"
+            "name" : "FRONTEND_URL",
+            "value" : "${var.url}"
           },
           {
-            "name": "S3_BUCKET_NAME",
-            "value": "${var.s3_bucket_name}"
+            "name" : "S3_BUCKET_NAME",
+            "value" : "${var.s3_bucket_name}"
           },
           {
-            "name": "NODE_ENV",
-            "value": "production"
+            "name" : "NODE_ENV",
+            "value" : "production"
           },
           {
-            "name": "NEXTAUTH_URL",
-            "value": "${var.url}"
+            "name" : "NEXTAUTH_URL",
+            "value" : "${var.url}"
           },
           {
-            "name": "PUBLIC_API_URL",
-            "value": "${var.url}"
+            "name" : "PUBLIC_API_URL",
+            "value" : "${var.url}"
           }
         ]
       }
@@ -205,7 +205,7 @@ module "alb" {
 }
 
 data "aws_route53_zone" "demo" {
-  name         = "intern.aws.prd.demodesu.com"
+  name = "intern.aws.prd.demodesu.com"
 }
 
 resource "aws_route53_record" "alb_alias" {
@@ -229,6 +229,93 @@ module "acm" {
 
   wait_for_validation = true
 }
+
+resource "aws_appautoscaling_target" "autoscaling_target_web_app" {
+  service_namespace  = "ecs"
+  resource_id        = "service/${aws_ecs_cluster.ecs_cluster_web_app.name}/${aws_ecs_service.ecs_service_web_app.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  min_capacity       = 2
+  max_capacity       = 4
+}
+
+resource "aws_appautoscaling_policy" "ecsfargate_scale_out" {
+  name               = "scale_out"
+  policy_type        = "StepScaling"
+  service_namespace  = aws_appautoscaling_target.autoscaling_target_web_app.service_namespace
+  resource_id        = aws_appautoscaling_target.autoscaling_target_web_app.resource_id
+  scalable_dimension = aws_appautoscaling_target.autoscaling_target_web_app.scalable_dimension
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 60
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_lower_bound = 0
+      scaling_adjustment          = 1
+    }
+  }
+}
+
+resource "aws_appautoscaling_policy" "ecsfargate_scale_in" {
+  name               = "scale_in"
+  policy_type        = "StepScaling"
+  service_namespace  = aws_appautoscaling_target.autoscaling_target_web_app.service_namespace
+  resource_id        = aws_appautoscaling_target.autoscaling_target_web_app.resource_id
+  scalable_dimension = aws_appautoscaling_target.autoscaling_target_web_app.scalable_dimension
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 60
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_upper_bound = 0
+      scaling_adjustment          = -1
+    }
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
+  alarm_name          = "cpu_utilization_high"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "75"
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name
+    ServiceName = aws_ecs_service.ecs_service_web_app.name
+  }
+
+  alarm_actions = [
+    aws_appautoscaling_policy.ecsfargate_scale_out.arn
+  ]
+}
+
+resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_low" {
+  alarm_name          = "cpu_utilization_low"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = "60"
+  statistic           = "Average"
+  threshold           = "25"
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name
+    ServiceName = aws_ecs_service.ecs_service_web_app.name
+  }
+
+  alarm_actions = [
+    aws_appautoscaling_policy.ecsfargate_scale_in.arn
+  ]
+}
+
 
 output "url" {
   value = var.url

@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - 23-terraform # TODO: just for testing, remove later
+      - 25-autoscaling # TODO: just for testing, remove later
 
 permissions:
   id-token: write

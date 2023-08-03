@@ -9,16 +9,29 @@ jobs:
     name: eslint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: install node v18
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install node v18
         uses: actions/setup-node@v1
         with:
           node-version: 18
-      - run: npm run build
+
+      - name: yarn install
+        run: yarn install
+
+      - name: Build client
+        run: npm run build
         working-directory: ./client
-      - run: npm run build
+
+      - name: Build server
+        run: npm run build
         working-directory: ./server
-      - run: npm eslint .
+
+      - name: Lint client code
+        run: npm eslint .
         working-directory: ./client
-      - run: npm eslint .
+
+      - name: Lint server code
+        run: npm eslint .
         working-directory: ./server

@@ -19,9 +19,9 @@ resource "null_resource" "docker_packaging" {
 
   triggers = {
     # only when files in client,server or nginx folder change, re-run this provisioner
-    "change_in_client" = sha1(join("", [for f in fileset("../client", "**"): filesha1(f)]))
-    "change_in_server" = sha1(join("", [for f in fileset("../server", "**"): filesha1(f)]))
-    "change_in_nginx" = sha1(join("", [for f in fileset("../nginx", "**"): filesha1(f)]))
+    "change_in_client" = sha1(join("", [for f in fileset("./client", "**"): filesha1(f)]))
+    "change_in_server" = sha1(join("", [for f in fileset("./server", "**"): filesha1(f)]))
+    "change_in_nginx" = sha1(join("", [for f in fileset("./nginx", "**"): filesha1(f)]))
   }
 
   depends_on = [

@@ -1,0 +1,107 @@
+name: Deploy Infrastructure
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 23-terraform # TODO: just for testing, remove later
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install node v18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install client dependencies
+        run: npm install
+        working-directory: ./client
+
+      - name: Install server dependencies
+        run: npm install
+        working-directory: ./server
+
+      - name: Build client
+        run: npm run build
+        working-directory: ./client
+
+      - name: Build server
+        run: npm run build
+        working-directory: ./server
+
+      - name: Lint client code
+        run: npx eslint .
+        working-directory: ./client
+
+      - name: Lint server code
+        run: npx eslint .
+        working-directory: ./server
+
+  unit-test:
+    name: "Unit Testing"
+    needs: linting
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Run test script
+        run: sh run-tests.sh
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
+
+  terraform-apply:
+    name: "Terraform Apply"
+    needs: unit-test
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      # Get AWS credentials
+      - name: AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ap-northeast-1
+          role-to-assume: arn:aws:iam::741641693274:role/intern-devops-terraform
+          role-duration-seconds: 1200
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        working-directory: ./dev
+        run: terraform init
+
+      # Terraform Apply
+      - name: Terraform Apply
+        working-directory: ./dev
+        run: terraform apply -auto-approve -var="image_tag=$(git rev-parse HEAD)"

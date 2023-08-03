@@ -110,6 +110,32 @@ resource "aws_ecs_task_definition" "ecs_task_definition_web_app" {
             "type" : "s3"
           }
         ],
+        "environment": [
+          {
+            "name": "AWS_REGION",
+            "value": "${data.aws_region.current.name}"
+          },
+          {
+            "name": "FRONTEND_URL",
+            "value": "${var.url}"
+          },
+          {
+            "name": "S3_BUCKET_NAME",
+            "value": "${var.s3_bucket_name}"
+          },
+          {
+            "name": "NODE_ENV",
+            "value": "production"
+          },
+          {
+            "name": "NEXTAUTH_URL",
+            "value": "${var.url}"
+          },
+          {
+            "name": "PUBLIC_API_URL",
+            "value": "${var.url}"
+          }
+        ]
       }
     ]
   )

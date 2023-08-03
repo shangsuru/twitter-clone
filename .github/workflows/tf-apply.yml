@@ -35,8 +35,10 @@ jobs:
 
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
-        run: terraform -chdir=dev init
+        working-directory: ./dev
+        run: terraform init
 
       # Terraform Apply
       - name: Terraform Apply
-        run: terraform -chdir=dev apply -auto-approve -var="image_tag=$(git rev-parse HEAD)"
+        working-directory: ./dev
+        run: terraform apply -auto-approve -var="image_tag=$(git rev-parse HEAD)"

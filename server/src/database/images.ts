@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/client-s3";
 import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { AnyItem } from "dynamoose/dist/Item";
 
 const config: S3ClientConfig =
   process.env.NODE_ENV === "production"
@@ -25,11 +26,11 @@ const config: S3ClientConfig =
 
 const s3: S3Client = new S3Client(config);
 
-async function imageKeysToPresignedUrl(tweet: any) {
+async function imageKeysToPresignedUrl(tweet: AnyItem | any) {
   if (tweet.images) {
     const imageIds = tweet.images.split(",");
     const imageUrls = [];
-    for (let id of imageIds) {
+    for (const id of imageIds) {
       const url = await getSignedUrl(
         s3,
         new GetObjectCommand({

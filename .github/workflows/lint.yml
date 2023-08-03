@@ -1,3 +1,5 @@
+name: Linting
+
 on:
   push:
   pull_request:
@@ -12,9 +14,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 18
-      - name: yarn install
-        run: yarn install
-      - name: eslint
-        uses: icrawl/action-eslint@v1
-        with:
-          custom-glob: apps # only if a different glob is needed, default: src
+      - run: npm run build
+        working-directory: ./client
+      - run: npm run build
+        working-directory: ./server
+      - run: npm eslint .
+        working-directory: ./client
+      - run: npm eslint .
+        working-directory: ./server

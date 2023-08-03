@@ -13,10 +13,12 @@ import {
 } from "../database/tweet";
 import { getUsersByHandle } from "../database/user";
 import { getFollowed } from "../database/follow";
+import { QueryResponse } from "dynamoose/dist/ItemRetriever";
+import { AnyItem } from "dynamoose/dist/Item";
 
-async function addUserInfoAndImageUrls(tweets: any[]) {
-  let userDataCache = new Map<string, { image: string; username: string }>();
-  let tweetsWithUser: object[] = [];
+async function addUserInfoAndImageUrls(tweets: QueryResponse<AnyItem> | any) {
+  const userDataCache = new Map<string, { image: string; username: string }>();
+  const tweetsWithUser: object[] = [];
   for (let i = 0; i < tweets.length; i++) {
     const tweet = tweets[i];
 
@@ -64,14 +66,14 @@ async function postTweet(req: Request, res: Response) {
   }
 
   // For each image, upload it to S3
-  let keysOfSavedImages: string[] = [];
+  const keysOfSavedImages: string[] = [];
   for (let i = 0; i < images.length; i++) {
     try {
       const key = await uploadImage(images[i]);
       keysOfSavedImages.push(key);
     } catch (err) {
       // On error, clean up all uploaded images so far
-      for (let key of keysOfSavedImages) {
+      for (const key of keysOfSavedImages) {
         await deleteImage(key);
       }
       res.status(500).send({ message: "Error uploading images" });
@@ -85,15 +87,13 @@ async function postTweet(req: Request, res: Response) {
 
 async function getAllTweets(req: Request, res: Response) {
   const tweets = await getTweets();
-
-  let tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
-
+  const tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
   res.send(tweetsWithUser);
 }
 
 async function getPersonalTweets(req: Request, res: Response) {
   const { userId } = req.params;
-  let followed = await getFollowed(userId);
+  const followed = await getFollowed(userId);
 
   // Get the tweets of the users that the user follows
   let tweets: any[] = [];
@@ -103,7 +103,7 @@ async function getPersonalTweets(req: Request, res: Response) {
     tweets = tweets.concat(userTweets);
   }
 
-  let tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
+  const tweetsWithUser: any[] = await addUserInfoAndImageUrls(tweets);
   res.send(tweetsWithUser);
 }
 
@@ -126,7 +126,7 @@ async function deleteTweet(req: Request, res: Response) {
   // Delete images of that tweet from S3
   if (tweet[0].images) {
     const imageIds = tweet[0].images.split(",");
-    for (let id of imageIds) {
+    for (const id of imageIds) {
       await deleteImage(id);
     }
   }

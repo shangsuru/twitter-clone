@@ -1,4 +1,4 @@
-let expect = require("chai").expect;
+import { expect } from "chai";
 import request from "supertest";
 import Dynamo from "../models/Dynamo";
 import app from "../app";

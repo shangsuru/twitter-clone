@@ -12,7 +12,7 @@ resource "null_resource" "docker_packaging" {
   provisioner "local-exec" {
     command = <<EOF
 	    aws ecr get-login-password --region ${data.aws_region.current.name} | docker login --username AWS --password-stdin ${aws_ecr_repository.ecr_repository_web_app.registry_id}.dkr.ecr.ap-northeast-1.amazonaws.com
-	    docker buildx build --platform linux/amd64 -t ${aws_ecr_repository.ecr_repository_web_app.repository_url}:${var.image_tag} -f ../nginx/Dockerfile ../
+	    docker buildx build --platform linux/amd64 -t ${aws_ecr_repository.ecr_repository_web_app.repository_url}:${var.image_tag} -f ../nginx/Dockerfile --build-arg AWS_REGION=${data.aws_region.current.name} --build-arg FRONTEND_URL=${var.url} --build-arg S3_BUCKET_NAME=${var.s3_bucket_name} --build-arg NODE_ENV=production --build-arg NEXTAUTH_URL=${var.url} --build-arg PUBLIC_API_URL=${var.url}   ../
 	    docker push ${aws_ecr_repository.ecr_repository_web_app.repository_url}:${var.image_tag}
 	    EOF
   }

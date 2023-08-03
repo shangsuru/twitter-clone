@@ -14,6 +14,14 @@ variable "record_name" {
   default = "henryhelm"
 }
 
+variable "s3_bucket_name" {
+  default = "intern-henryhelm"
+}
+
+variable "url" {
+  default = "https://henryhelm.intern.aws.prd.demodesu.com"
+}
+
 variable "image_tag" {
 
 }

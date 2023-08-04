@@ -9,12 +9,6 @@ switch (process.env.NODE_ENV) {
   case "production":
     configDotenv({ path: resolve(__dirname, "../.env.production") });
     break;
-  case undefined:
-    console.log(
-      "NODE_ENV is not set. Please run export NODE_ENV=development to run locally."
-    );
-    process.exit(1);
-
   default:
     console.log(
       `NODE_ENV ${process.env.NODE_ENV} is not supported. Please run export NODE_ENV=development to run locally.`

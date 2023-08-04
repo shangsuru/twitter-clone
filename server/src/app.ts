@@ -1,5 +1,5 @@
 import "./config";
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import routes from "./routes/routes";
 import dynamoose from "dynamoose";
 import cors from "cors";

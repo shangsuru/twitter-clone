@@ -1,4 +1,3 @@
-import { QueryResponse } from "dynamoose/dist/ItemRetriever";
 import Dynamo from "../models/Dynamo";
 import { v4 as uuid } from "uuid";
 import { AnyItem } from "dynamoose/dist/Item";

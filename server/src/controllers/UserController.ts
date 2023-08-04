@@ -30,7 +30,7 @@ async function getUser(req: Request, res: Response) {
 
   const tweets = await getTweetsByUser(userId);
 
-  for (let tweet of tweets) {
+  for (const tweet of tweets) {
     await imageKeysToPresignedUrl(tweet);
   }
 

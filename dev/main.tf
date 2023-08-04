@@ -18,10 +18,7 @@ resource "null_resource" "docker_packaging" {
   }
 
   triggers = {
-    # only when files in client,server or nginx folder change, re-run this provisioner
-    "change_in_client" = sha1(join("", [for f in fileset("./client", "**") : filesha1(f)]))
-    "change_in_server" = sha1(join("", [for f in fileset("./server", "**") : filesha1(f)]))
-    "change_in_nginx"  = sha1(join("", [for f in fileset("./nginx", "**") : filesha1(f)]))
+    always_run = timestamp()
   }
 
   depends_on = [
@@ -279,10 +276,10 @@ resource "aws_appautoscaling_policy" "ecsfargate_scale_in" {
 resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
   alarm_name          = "memory_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "MemoryUtilization"
   namespace           = "AWS/ECS"
-  period              = "60"
+  period              = "30"
   statistic           = "Average"
   threshold           = "40"
 
@@ -299,10 +296,10 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
 resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_low" {
   alarm_name          = "memory_utilization_low"
   comparison_operator = "LessThanOrEqualToThreshold"
-  evaluation_periods  = "2"
+  evaluation_periods  = "1"
   metric_name         = "MemoryUtilization"
   namespace           = "AWS/ECS"
-  period              = "60"
+  period              = "30"
   statistic           = "Average"
   threshold           = "10"
 

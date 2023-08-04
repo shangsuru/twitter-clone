@@ -6,6 +6,8 @@ COPY --from=node /usr/local/lib /usr/local/lib
 COPY --from=node /usr/local/include /usr/local/include
 COPY --from=node /usr/local/bin /usr/local/bin
 
+ENV PUBLIC_API_URL=https://henryhelm.intern.aws.prd.demodesu.com
+
 RUN node -v
 RUN npm -v
 

@@ -120,7 +120,7 @@ export default function TweetModal({ image, handle, JWT }: LoginDataProps) {
           <div>
             <ProfileButton image={image} handle={handle} />
 
-            <span>{"What's happening?"}</span>
+            <span>{"What's happening...?"}</span>
           </div>
         }
         onOk={handleModalOk}

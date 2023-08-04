@@ -278,7 +278,7 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
   namespace           = "AWS/ECS"
   period              = "30"
   statistic           = "Average"
-  threshold           = "5"
+  threshold           = "20"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name
@@ -298,7 +298,7 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_low" {
   namespace           = "AWS/ECS"
   period              = "30"
   statistic           = "Average"
-  threshold           = "2"
+  threshold           = "10"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name

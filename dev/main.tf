@@ -234,7 +234,7 @@ resource "aws_appautoscaling_target" "autoscaling_target_web_app" {
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.ecs_cluster_web_app.name}/${aws_ecs_service.ecs_service_web_app.name}"
   scalable_dimension = "ecs:service:DesiredCount"
-  min_capacity       = 2
+  min_capacity       = 1
   max_capacity       = 4
 }
 
@@ -277,14 +277,14 @@ resource "aws_appautoscaling_policy" "ecsfargate_scale_in" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
-  alarm_name          = "cpu_utilization_high"
+  alarm_name          = "memory_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
-  metric_name         = "CPUUtilization"
+  metric_name         = "MemoryUtilization"
   namespace           = "AWS/ECS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "75"
+  threshold           = "50"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name
@@ -297,14 +297,14 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_low" {
-  alarm_name          = "cpu_utilization_low"
+  alarm_name          = "memory_utilization_low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
-  metric_name         = "CPUUtilization"
+  metric_name         = "MemoryUtilization"
   namespace           = "AWS/ECS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "25"
+  threshold           = "10"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name

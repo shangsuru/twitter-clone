@@ -278,7 +278,7 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_memory_high" {
   namespace           = "AWS/ECS"
   period              = "30"
   statistic           = "Average"
-  threshold           = "40"
+  threshold           = "28"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name
@@ -298,7 +298,7 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_memory_low" {
   namespace           = "AWS/ECS"
   period              = "30"
   statistic           = "Average"
-  threshold           = "30"
+  threshold           = "20"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name

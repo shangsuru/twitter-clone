@@ -235,7 +235,7 @@ resource "aws_appautoscaling_target" "autoscaling_target_web_app" {
   resource_id        = "service/${aws_ecs_cluster.ecs_cluster_web_app.name}/${aws_ecs_service.ecs_service_web_app.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   min_capacity       = 1
-  max_capacity       = 4
+  max_capacity       = 5
 }
 
 resource "aws_appautoscaling_policy" "ecsfargate_scale_out" {
@@ -284,7 +284,7 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
   namespace           = "AWS/ECS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "50"
+  threshold           = "40"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name

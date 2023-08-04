@@ -12,7 +12,7 @@ resource "null_resource" "docker_packaging" {
   provisioner "local-exec" {
     command = <<EOF
 	    aws ecr get-login-password --region ${data.aws_region.current.name} | docker login --username AWS --password-stdin ${aws_ecr_repository.ecr_repository_web_app.registry_id}.dkr.ecr.ap-northeast-1.amazonaws.com
-	    docker buildx build --platform linux/amd64 -t ${aws_ecr_repository.ecr_repository_web_app.repository_url}:${var.image_tag} -f ../nginx/Dockerfile --build-arg AWS_REGION=${data.aws_region.current.name} --build-arg FRONTEND_URL=${var.url} --build-arg S3_BUCKET_NAME=${var.s3_bucket_name} --build-arg NODE_ENV=production --build-arg NEXTAUTH_URL=${var.url} --build-arg PUBLIC_API_URL=${var.url}   ../
+	    docker buildx build --platform linux/amd64 -t ${aws_ecr_repository.ecr_repository_web_app.repository_url}:${var.image_tag} -f ../nginx/Dockerfile --build-arg AWS_REGION=${data.aws_region.current.name} --build-arg FRONTEND_URL=${var.app_url} --build-arg S3_BUCKET_NAME=${var.s3_bucket_name} --build-arg NODE_ENV=production --build-arg NEXTAUTH_URL=${var.app_url} --build-arg PUBLIC_API_URL=${var.app_url}   ../
 	    docker push ${aws_ecr_repository.ecr_repository_web_app.repository_url}:${var.image_tag}
 	    EOF
   }
@@ -103,7 +103,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition_web_app" {
         }
         "environmentFiles" : [
           {
-            "value" : "arn:aws:s3:::intern-henryhelm/secrets.env",
+            "value" : var.secrets_file_path,
             "type" : "s3"
           }
         ],
@@ -114,7 +114,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition_web_app" {
           },
           {
             "name" : "FRONTEND_URL",
-            "value" : "${var.url}"
+
+            "value" : "${var.app_url}"
           },
           {
             "name" : "S3_BUCKET_NAME",
@@ -126,7 +127,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition_web_app" {
           },
           {
             "name" : "NEXTAUTH_URL",
-            "value" : "${var.url}"
+            "value" : "${var.app_url}"
           },
         ]
       }
@@ -222,6 +223,7 @@ module "acm" {
   zone_id     = data.aws_route53_zone.demo.zone_id
 
   wait_for_validation = true
+
 }
 
 resource "aws_appautoscaling_target" "autoscaling_target_web_app" {
@@ -308,9 +310,4 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_low" {
   alarm_actions = [
     aws_appautoscaling_policy.ecsfargate_scale_in.arn
   ]
-}
-
-
-output "url" {
-  value = var.url
 }

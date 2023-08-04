@@ -14,8 +14,12 @@ variable "s3_bucket_name" {
   default = "intern-henryhelm"
 }
 
-variable "url" {
+variable "app_url" {
   default = "https://henryhelm.intern.aws.prd.demodesu.com"
+}
+
+variable "secrets_file_path" {
+  default = "arn:aws:s3:::intern-henryhelm/secrets.env"
 }
 
 variable "image_tag" {

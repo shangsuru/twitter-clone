@@ -128,10 +128,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition_web_app" {
             "name" : "NEXTAUTH_URL",
             "value" : "${var.url}"
           },
-          {
-            "name" : "PUBLIC_API_URL",
-            "value" : "${var.url}"
-          }
         ]
       }
     ]
@@ -244,8 +240,8 @@ resource "aws_appautoscaling_policy" "ecsfargate_scale_out" {
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
-    cooldown                = 60
-    metric_aggregation_type = "Average"
+    cooldown                = 30
+    metric_aggregation_type = "Minimum"
 
     step_adjustment {
       metric_interval_lower_bound = 0
@@ -263,8 +259,8 @@ resource "aws_appautoscaling_policy" "ecsfargate_scale_in" {
 
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
-    cooldown                = 60
-    metric_aggregation_type = "Average"
+    cooldown                = 30
+    metric_aggregation_type = "Minimum"
 
     step_adjustment {
       metric_interval_upper_bound = 0
@@ -273,14 +269,14 @@ resource "aws_appautoscaling_policy" "ecsfargate_scale_in" {
   }
 }
 
-resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
+resource "aws_cloudwatch_metric_alarm" "ecsfargate_memory_high" {
   alarm_name          = "memory_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
   metric_name         = "MemoryUtilization"
   namespace           = "AWS/ECS"
   period              = "30"
-  statistic           = "Average"
+  statistic           = "Minimum"
   threshold           = "40"
 
   dimensions = {
@@ -293,15 +289,15 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
   ]
 }
 
-resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_low" {
+resource "aws_cloudwatch_metric_alarm" "ecsfargate_memory_low" {
   alarm_name          = "memory_utilization_low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "1"
   metric_name         = "MemoryUtilization"
   namespace           = "AWS/ECS"
   period              = "30"
-  statistic           = "Average"
-  threshold           = "10"
+  statistic           = "Minimum"
+  threshold           = "20"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.ecs_cluster_web_app.name

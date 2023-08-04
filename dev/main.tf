@@ -270,10 +270,10 @@ resource "aws_appautoscaling_policy" "ecsfargate_scale_in" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
-  alarm_name          = "memory_utilization_high"
+  alarm_name          = "cpu_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name         = "MemoryUtilization"
+  metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = "30"
   statistic           = "Maximum"
@@ -290,10 +290,10 @@ resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecsfargate_cpu_low" {
-  alarm_name          = "memory_utilization_low"
+  alarm_name          = "cpu_utilization_low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "1"
-  metric_name         = "MemoryUtilization"
+  metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = "30"
   statistic           = "Maximum"
